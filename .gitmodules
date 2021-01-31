@@ -1,0 +1,6 @@
+[submodule "includes/GTAVMenuBase"]
+	path = includes/GTAVMenuBase
+	url = https://github.com/E66666666/GTAVMenuBase.git
+[submodule "includes/eigen"]
+	path = includes/eigen
+	url = https://gitlab.com/libeigen/eigen.git
