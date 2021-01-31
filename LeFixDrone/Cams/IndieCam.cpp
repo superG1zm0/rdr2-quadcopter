@@ -15,7 +15,7 @@ IndieCam::~IndieCam()
 
 void IndieCam::setActive()
 {
-	CAM::SET_CAM_ACTIVE(cam, true); CAM::RENDER_SCRIPT_CAMS(TRUE, 0, 3000, false, false);
+	CAM::SET_CAM_ACTIVE(cam, true); CAM::RENDER_SCRIPT_CAMS(TRUE, 0, 3000, false, false, 0);
 }
 
 void IndieCam::update()

@@ -9,7 +9,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{439E34D1-2CB8-4ABF-BEDA-3026440E38B1}</ProjectGuid>
     <RootNamespace>LeFixDrone</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -21,7 +21,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -36,8 +36,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.asi</TargetExt>
-    <IncludePath>D:\Programme\GitHub\GTAVMenuBase;D:\Programme\GitHub\ScriptHookV_SDK;$(SolutionDir)\includes;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programme\GitHub\ScriptHookV_SDK\lib;$(SolutionDir)\libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\includes;$(SolutionDir)\includes\GTAVMenuBase;$(SolutionDir)\includes\eigen;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\libraries;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -47,6 +47,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -54,10 +55,18 @@
       <AdditionalDependencies>ScriptHookV.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetDir)$(ProjectName).asi" "D:\Programme\Grand Theft Auto 5 (R2P)\" /Y</Command>
+      <Command>xcopy "$(TargetDir)$(ProjectName).asi" "D:\Program Files\Epic Games\GTAV\" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\includes\GTAVMenuBase\InstructionalButton.h" />
+    <ClInclude Include="..\includes\GTAVMenuBase\menu.h" />
+    <ClInclude Include="..\includes\GTAVMenuBase\menucontrols.h" />
+    <ClInclude Include="..\includes\GTAVMenuBase\menukeyboard.h" />
+    <ClInclude Include="..\includes\GTAVMenuBase\menumemutils.hpp" />
+    <ClInclude Include="..\includes\GTAVMenuBase\menusettings.h" />
+    <ClInclude Include="..\includes\GTAVMenuBase\menuutils.h" />
+    <ClInclude Include="..\includes\GTAVMenuBase\Scaleform.h" />
     <ClInclude Include="AudioHandler.h" />
     <ClInclude Include="Clone.h" />
     <ClInclude Include="Drone\DroneController.h" />
@@ -69,11 +78,6 @@
     <ClInclude Include="Graphics\ColorRGBA.h" />
     <ClInclude Include="Drone\Drone.h" />
     <ClInclude Include="Cams\IndieCam.h" />
-    <ClInclude Include="..\..\GTAVMenuBase\menu.h" />
-    <ClInclude Include="..\..\GTAVMenuBase\menucontrols.h" />
-    <ClInclude Include="..\..\GTAVMenuBase\menukeyboard.h" />
-    <ClInclude Include="..\..\GTAVMenuBase\menuutils.h" />
-    <ClInclude Include="..\..\GTAVMenuBase\menusettings.h" />
     <ClInclude Include="Input\Gamepad.h" />
     <ClInclude Include="LeFixDrone.h" />
     <ClInclude Include="Graphics\Plot.h" />
@@ -91,6 +95,12 @@
     <ClInclude Include="Utils\UIutils.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\includes\GTAVMenuBase\menu.cpp" />
+    <ClCompile Include="..\includes\GTAVMenuBase\menucontrols.cpp" />
+    <ClCompile Include="..\includes\GTAVMenuBase\menukeyboard.cpp" />
+    <ClCompile Include="..\includes\GTAVMenuBase\menumemutils.cpp" />
+    <ClCompile Include="..\includes\GTAVMenuBase\menusettings.cpp" />
+    <ClCompile Include="..\includes\GTAVMenuBase\menuutils.cpp" />
     <ClCompile Include="AudioHandler.cpp" />
     <ClCompile Include="Clone.cpp" />
     <ClCompile Include="Drone\DroneControllerAcro.cpp" />
@@ -101,11 +111,6 @@
     <ClCompile Include="Graphics\ColorRGBA.cpp" />
     <ClCompile Include="Drone\Drone.cpp" />
     <ClCompile Include="Cams\IndieCam.cpp" />
-    <ClCompile Include="..\..\GTAVMenuBase\menu.cpp" />
-    <ClCompile Include="..\..\GTAVMenuBase\menucontrols.cpp" />
-    <ClCompile Include="..\..\GTAVMenuBase\menukeyboard.cpp" />
-    <ClCompile Include="..\..\GTAVMenuBase\menuutils.cpp" />
-    <ClCompile Include="..\..\GTAVMenuBase\menusettings.cpp" />
     <ClCompile Include="Input\Gamepad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\Plot.cpp" />

@@ -38,7 +38,7 @@ void DroneState::read()
 
 	//Implicitly determines rotation velocity
 	drot = rot.conjugate() * rotTemp;
-	deltaTime = GAMEPLAY::GET_FRAME_TIME();
+	deltaTime = MISC::GET_FRAME_TIME();
 
 	pos = ENTITY_X::GET_ENTITY_COORDS(collider);
 	rot = rotTemp;

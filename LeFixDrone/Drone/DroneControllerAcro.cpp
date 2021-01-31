@@ -36,7 +36,7 @@ void DroneControllerAcro::update(const DroneState &currentState, const float &st
 	float contPitch = Steuerung::calculateDegSecPitch(inputPitch);
 
 	//Input Delta Rotation as Angle Axis
-	Vector3f axisRot = Vector3f(contPitch, contRoll, contYaw) * GAMEPLAY::GET_FRAME_TIME();
+	Vector3f axisRot = Vector3f(contPitch, contRoll, contYaw) * MISC::GET_FRAME_TIME();
 	float norm = axisRot.norm();	//Get Norm
 
 	Quaternionf drot;
