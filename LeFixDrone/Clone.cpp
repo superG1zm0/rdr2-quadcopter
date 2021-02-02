@@ -11,8 +11,8 @@ Clone::Clone(Ped original)
 	ENTITY::SET_ENTITY_HEADING(ped, ENTITY::GET_ENTITY_HEADING(original));
 
 	//Blip
-	blip = UI::ADD_BLIP_FOR_ENTITY(ped);
-	UI::SET_BLIP_SPRITE(blip, 197); //Yoga
+	blip = HUD::ADD_BLIP_FOR_ENTITY(ped);
+	HUD::SET_BLIP_SPRITE(blip, 197); //Yoga
 
 	//p_rc_handset 2553089994
 	//SKEL_R_Hand 0xdead
@@ -31,7 +31,7 @@ Clone::Clone(Ped original)
 Clone::~Clone()
 {
 	//Delete Blip
-	UI::REMOVE_BLIP(&blip);
+	HUD::REMOVE_BLIP(&blip);
 
 	//Delete Controller
 	ENTITY::DELETE_ENTITY(&objController);
@@ -70,7 +70,7 @@ void Clone::refreshCamMode()
 {
 	switch (Settings::camMode)
 	{
-	case LeFix::camModeC1: CAM::SET_CAM_ACTIVE(cam1, true); CAM::RENDER_SCRIPT_CAMS(1, 0, 3000, false, false); break;
+	case LeFix::camModeC1: CAM::SET_CAM_ACTIVE(cam1, true); CAM::RENDER_SCRIPT_CAMS(1, 0, 3000, false, false, 0); break;
 	default: break;
 	}
 }
@@ -114,7 +114,7 @@ void Clone::playAnimations()
 
 	//Intro
 	//AI::TASK_PLAY_ANIM(ped, "mini@strip_club@lap_dance_2g@ld_2g_reach", "ld_2g_sit_idle", 8.0, 0.0, -1, 1, 0.0f, false, false, false);
-	AI::TASK_PLAY_ANIM(ped, "missarmenian3", "jimmy_playingvideogame_loop_d", 8.0, 0.0, -1, 17, 0.0f, false, false, false);
+	TASK::TASK_PLAY_ANIM(ped, "missarmenian3", "jimmy_playingvideogame_loop_d", 8.0, 0.0, -1, 17, 0.0f, false, false, false);
 
 	/*
 	float speed > normal speed is 8.0f

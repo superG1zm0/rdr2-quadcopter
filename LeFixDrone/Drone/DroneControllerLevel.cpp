@@ -30,7 +30,7 @@ void DroneControllerLevel::update(const DroneState &currentState, const float &s
 	float inputY = stick_right_y;	//Pos. Forward, Neg. Backward
 	float inputX = stick_right_x;	//Pos. Right, Neg. Left
 
-	float dT = GAMEPLAY::GET_FRAME_TIME();
+	float dT = MISC::GET_FRAME_TIME();
 
 	//update End State
 	updateEndState(inputX, inputY, inputZ, inputYaw);
@@ -62,7 +62,7 @@ void DroneControllerLevel::update(const DroneState &currentState, const float &s
 
 void DroneControllerLevel::updateEndState(const float &inputX, const float &inputY, const float &inputZ, const float &inputYaw)
 {
-	float dT = GAMEPLAY::GET_FRAME_TIME();
+	float dT = MISC::GET_FRAME_TIME();
 
 	//Relative Position Delta
 	Vector3f relDeltaPos = Vector3f(inputX, inputY, inputZ)*dT*Settings::droneMaxVel*0.8f;

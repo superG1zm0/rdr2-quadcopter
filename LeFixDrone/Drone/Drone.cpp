@@ -83,8 +83,8 @@ void Drone::applyCam()
 
 	switch (Settings::camMode)
 	{
-	case LeFix::camModeD1: CAM::SET_CAM_ACTIVE(cam1, true); CAM::RENDER_SCRIPT_CAMS(1, 0, 3000, false, false); break;
-	case LeFix::camModeD3: CAM::SET_CAM_ACTIVE(cam3, true); CAM::RENDER_SCRIPT_CAMS(1, 0, 3000, false, false); break;
+	case LeFix::camModeD1: CAM::SET_CAM_ACTIVE(cam1, true); CAM::RENDER_SCRIPT_CAMS(1, 0, 3000, false, false, 0); break;
+	case LeFix::camModeD3: CAM::SET_CAM_ACTIVE(cam3, true); CAM::RENDER_SCRIPT_CAMS(1, 0, 3000, false, false, 0); break;
 	case LeFix::camModeDF: camF.setActive(); break;
 	default: break;
 	}
@@ -162,9 +162,9 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 	}
 
 	//Blip
-	blip = UI::ADD_BLIP_FOR_ENTITY(collider);
-	UI::SET_BLIP_SPRITE(blip, 8); // 4 dot
-	UI::SET_BLIP_ROTATION(blip, 45);
+	blip = HUD::ADD_BLIP_FOR_ENTITY(collider);
+	HUD::SET_BLIP_SPRITE(blip, 8); // 4 dot
+	HUD::SET_BLIP_ROTATION(blip, 45);
 
 	//Cameras
 	cam1 = CAM::CREATE_CAM("DEFAULT_SCRIPTED_CAMERA", true);
@@ -192,9 +192,9 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 Drone::~Drone()
 {
 	delete controller;
-	UI::REMOVE_BLIP(&blip);
+	HUD::REMOVE_BLIP(&blip);
 	audio.stopSources();
-	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE);
+	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE, 0);
 	CAM::DESTROY_CAM(cam1, true);
 	CAM::DESTROY_CAM(cam3, true);
 	OBJECT::DELETE_OBJECT(&collider);
@@ -233,7 +233,7 @@ void Drone::update(Gamepad &gamepad)
 
 		if ((currentState.vel - oldState.vel).squaredNorm() > (Settings::droneMaxVel*Settings::droneMaxVel/36.0f) )
 		{
-			if(Settings::gamepadVib) CONTROLS::SET_PAD_SHAKE(0, 100, 200);
+			if(Settings::gamepadVib) PAD::SET_PAD_SHAKE(0, 100, 200);
 			//Screen effect when collision delta v is above maxVel/6
 			if(Settings::camMode == camModeD1) TimeCycleManager::setTimecycleFadeOut("NG_filmic21", 0.5f);
 		}
@@ -324,7 +324,7 @@ void Drone::setTrails(bool doEnable)
 		if (STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset)) {
 			for (int n = 0; n < NUM_PROP; n++)
 			{
-				GRAPHICS::_USE_PARTICLE_FX_ASSET_NEXT_CALL(asset);
+				GRAPHICS::USE_PARTICLE_FX_ASSET(asset);
 				ptfx[n][0] = GRAPHICS::START_PARTICLE_FX_LOOPED_ON_ENTITY(effect, modelFris[n], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, FALSE, FALSE, FALSE);
 				GRAPHICS::SET_PARTICLE_FX_LOOPED_COLOUR(ptfx[n][0], 1.0f, 0.5f, 0.0f, FALSE);
 			}
@@ -345,7 +345,7 @@ void Drone::setTrails(bool doEnable)
 			if (STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset)) {
 				for (int n = 0; n < NUM_PROP; n++)
 				{
-					GRAPHICS::_USE_PARTICLE_FX_ASSET_NEXT_CALL(asset);
+					GRAPHICS::USE_PARTICLE_FX_ASSET(asset);
 					ptfx[n][1] = GRAPHICS::START_PARTICLE_FX_LOOPED_ON_ENTITY(effect, modelFris[n], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, FALSE, FALSE, FALSE);
 					GRAPHICS::SET_PARTICLE_FX_LOOPED_COLOUR(ptfx[n][1], 1.0f, 0.5f, 0.0f, FALSE);
 				}
@@ -373,10 +373,10 @@ void Drone::updateMomentum(const Quaternionf &desiredRot)
 {
 	if (Settings::pidEnable)
 	{
-		slerpRot = slerpRot.slerp(GAMEPLAY::GET_FRAME_TIME() * 25.0f, desiredRot); //25 Frames Slerp desiredRot, should kill overrotation of pid
+		slerpRot = slerpRot.slerp(MISC::GET_FRAME_TIME() * 25.0f, desiredRot); //25 Frames Slerp desiredRot, should kill overrotation of pid
 
 		//Use PID
-		pidRot.update(currentState.rot, slerpRot, GAMEPLAY::GET_FRAME_TIME());
+		pidRot.update(currentState.rot, slerpRot, MISC::GET_FRAME_TIME());
 		Vector3f momentum = pidRot.getOutput();
 
 		//Apply PID Output momentum
@@ -464,20 +464,20 @@ void Drone::updateMinimap()
 	{
 		//use cam1
 		heading = (int)getHeading(cam1RotGlobal._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
-		UI::LOCK_MINIMAP_ANGLE(heading);
+		HUD::LOCK_MINIMAP_ANGLE(heading);
 	}
 	else if (CAM::IS_CAM_RENDERING(cam3))
 	{
 		//use cam3
 		heading = (int)getHeading(cam3RotGlobal._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
-		UI::LOCK_MINIMAP_ANGLE(heading);
+		HUD::LOCK_MINIMAP_ANGLE(heading);
 	}
 	else
 	{
 		//use drone (don't rotate minimap just set blip)
 		heading = (int)getHeading(currentState.rot._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
 	}
-	UI::SET_BLIP_ROTATION(blip, heading + 45);
+	HUD::SET_BLIP_ROTATION(blip, heading + 45);
 	
 }
 

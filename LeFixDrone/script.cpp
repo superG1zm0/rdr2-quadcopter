@@ -21,7 +21,7 @@
 #include "Graphics\StickPlot.h"
 #include "nativesExtended.h"
 
-std::string modVersion = "v1.2";
+std::string modVersion = "v1.3";
 
 NativeMenu::Menu menu;
 
@@ -80,7 +80,7 @@ void ScriptMain()
 		if (isAbleToStartFlight())	//Start Flight?
 		{
 			//Textbox checken
-			if (!(UI::IS_HUD_COMPONENT_ACTIVE(eHudComponent::HudComponentHelpText) && !boxFromModItself)) //No other helptextbox visible
+			if (!(HUD::IS_HUD_COMPONENT_ACTIVE(eHudComponent::HudComponentHelpText) && !boxFromModItself)) //No other helptextbox visible
 			{
 				//showTextboxTop("Back to start location ~INPUT_FRONTEND_ACCEPT~~n~Teleport player to drone ~INPUT_FRONTEND_CANCEL~", true); //Match with gamepad class?
 				showTextboxTop("Start Quadcopter Flight ~INPUT_FRONTEND_ACCEPT~", false);
@@ -100,13 +100,13 @@ void ScriptMain()
 void onMenuEnter() {
 	Settings::Load();
 	//float tscale = 0.05f;
-	//GAMEPLAY::SET_TIME_SCALE(tscale);
+	//MISC::SET_TIME_SCALE(tscale);
 	//AudioHandler::setTimeScale(tscale);
 }
 void onMenuExit() {
 	Settings::Save();
 	//float tscale = 1.0f;
-	//GAMEPLAY::SET_TIME_SCALE(tscale);
+	//MISC::SET_TIME_SCALE(tscale);
 	//AudioHandler::setTimeScale(tscale);
 }
 
@@ -153,7 +153,7 @@ void update()
 		if (
 			PLAYER::IS_PLAYER_DEAD(PLAYER::PLAYER_ID()) ||
 			PLAYER::IS_PLAYER_BEING_ARRESTED(PLAYER::PLAYER_ID(), TRUE) ||
-			GAMEPLAY::GET_MISSION_FLAG())
+			MISC::GET_MISSION_FLAG())
 		{
 			endFlightQuick();
 			currentExitCode = LeFix::exitNo;
@@ -200,7 +200,7 @@ void updateMenu()
 
 	if (menu.CurrentMenu("mainmenu")) {
 		menu.Title("Quadcopter");
-		menu.Subtitle("v1.2 by LeFix");
+		menu.Subtitle("v1.3 by Giz");
 		menu.FloatOption("Volume", Settings::audioVolume, 0.0f, 1.0f, 0.1f, { "Global volume for all mod-related sounds." });
 		menu.MenuOption("Camera", "cameramenu", { "Settings for all camera modes." });
 		menu.MenuOption("Control", "controlmenu", { "Settings for conversion of gamepad output to drone input." });
@@ -301,6 +301,7 @@ void updateMenu()
 		s = s || menu.FloatOption("Max rel. Load",	Settings::droneMaxRelLoad,	 0.0f,   5.0f, 0.1f, { "Maximum extra load the drone is capable to carry." });
 		s = s || menu.FloatOption("Max Velocity",	Settings::droneMaxVel,		10.0f, 200.0f, 1.0f, { "Maximum horizontal velocity the drone can achieve. Implicitly determines the drag coefficient." });
 		         menu.BoolOption("3D Flying",		Settings::drone3DFly,		{ "Enables downward/reverse thrust." });
+				 menu.BoolOption("No Thrust Stick Down", Settings::droneNoThrustDown, { "No thrust stick position is stick down." });
 		c = c || menu.BoolOption("Acro Mode",		Settings::droneAcroMode,	{ "Enables direct control mode especially for racing." });
 		
 		//Apply Changes
@@ -379,10 +380,10 @@ bool isAbleToStartFlight()
 {
 	return ( ENTITY::GET_ENTITY_SPEED(PLAYER::PLAYER_PED_ID()) < 0.2f &&			//Not moving
 		!ENTITY::IS_ENTITY_IN_WATER(PLAYER::PLAYER_PED_ID()) &&						//Not swimming
-		UI::IS_HUD_COMPONENT_ACTIVE(eHudComponent::HudComponentWeaponWheel) &&		//Weapon wheel active
+		HUD::IS_HUD_COMPONENT_ACTIVE(eHudComponent::HudComponentWeaponWheel) &&		//Weapon wheel active
 		PED::IS_PED_ON_FOOT(PLAYER::PLAYER_PED_ID()) &&								//On Foot
 		!PED::IS_PED_RUNNING_MOBILE_PHONE_TASK(PLAYER::PLAYER_PED_ID()) &&			//No Phone Call
-		!GAMEPLAY::GET_MISSION_FLAG() );											//No active mission
+		!MISC::GET_MISSION_FLAG() );											//No active mission
 }
 
 void startFlight()
@@ -396,7 +397,7 @@ void startFlight()
 
 	//Change PlayerPed
 	ENTITY::SET_ENTITY_COLLISION(playerPed, FALSE, FALSE);
-	UI::SET_BLIP_DISPLAY(UI::GET_MAIN_PLAYER_BLIP_ID(), 3);
+	HUD::SET_BLIP_DISPLAY(HUD::GET_MAIN_PLAYER_BLIP_ID(), 3);
 
 	//Clone PlayerPed
 	clone = new Clone(playerPed);
@@ -429,7 +430,7 @@ void endFlight(bool goBack)
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 
 	//Audio
-	AUDIO::_PLAY_AMBIENT_SPEECH1(PLAYER::PLAYER_PED_ID(), "ROLLERCOASTER_CHAT_NORMAL", "SPEECH_PARAMS_FORCE");
+	AUDIO::_PLAY_AMBIENT_SPEECH1(PLAYER::PLAYER_PED_ID(), "ROLLERCOASTER_CHAT_NORMAL", "SPEECH_PARAMS_FORCE", 0);
 
 	//Fade out
 	CAM::DO_SCREEN_FADE_OUT(400);
@@ -458,10 +459,10 @@ void endFlight(bool goBack)
 	//Change PlayerPed
 	ENTITY::SET_ENTITY_COLLISION(playerPed, TRUE, FALSE);
 	ENTITY::SET_ENTITY_VISIBLE(playerPed, TRUE, FALSE);
-	UI::SET_BLIP_DISPLAY(UI::GET_MAIN_PLAYER_BLIP_ID(), 2);
+	HUD::SET_BLIP_DISPLAY(HUD::GET_MAIN_PLAYER_BLIP_ID(), 2);
 
 	//Additional
-	UI::UNLOCK_MINIMAP_ANGLE();
+	HUD::UNLOCK_MINIMAP_ANGLE();
 	ENTITY::FREEZE_ENTITY_POSITION(playerPed, FALSE);
 	PLAYER::SET_PLAYER_INVINCIBLE(PLAYER::PLAYER_ID(), FALSE);
 
@@ -473,7 +474,7 @@ void endFlight(bool goBack)
 	WAIT_LONG(waitTime);
 	
 	//Fade in
-	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE);
+	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE, 0);
 	CAM::DO_SCREEN_FADE_IN(400);
 }
 void endFlightQuick()
@@ -490,24 +491,24 @@ void endFlightQuick()
 	//Change PlayerPed
 	ENTITY::SET_ENTITY_COLLISION(playerPed, TRUE, FALSE);
 	ENTITY::SET_ENTITY_VISIBLE(playerPed, TRUE, FALSE);
-	UI::SET_BLIP_DISPLAY(UI::GET_MAIN_PLAYER_BLIP_ID(), 2);
+	HUD::SET_BLIP_DISPLAY(HUD::GET_MAIN_PLAYER_BLIP_ID(), 2);
 
 	//Additional
-	UI::UNLOCK_MINIMAP_ANGLE();
+	HUD::UNLOCK_MINIMAP_ANGLE();
 	ENTITY::FREEZE_ENTITY_POSITION(playerPed, FALSE);
 	PLAYER::SET_PLAYER_INVINCIBLE(PLAYER::PLAYER_ID(), FALSE);
 
 	delete drone;
 	drone = nullptr;
 
-	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE);
+	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE, 0);
 }
 
 void disableFlightButtons()
 {
-	CONTROLS::DISABLE_CONTROL_ACTION(2, eControl::ControlCharacterWheel, TRUE);
-	CONTROLS::DISABLE_CONTROL_ACTION(2, eControl::ControlSelectWeapon, TRUE);	 //TOMTOM
-	CONTROLS::DISABLE_CONTROL_ACTION(2, eControl::ControlPhone, TRUE);
+	PAD::DISABLE_CONTROL_ACTION(2, eControl::ControlCharacterWheel, TRUE);
+	PAD::DISABLE_CONTROL_ACTION(2, eControl::ControlSelectWeapon, TRUE);	 //TOMTOM
+	PAD::DISABLE_CONTROL_ACTION(2, eControl::ControlPhone, TRUE);
 }
 
 void WAIT_LONG(DWORD waitTime)

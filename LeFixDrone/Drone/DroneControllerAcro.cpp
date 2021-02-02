@@ -23,7 +23,10 @@ void DroneControllerAcro::update(const DroneState &currentState, const float &st
 	float inputThrottle =  stick_left_y;
 
 	//INPUT TO CONTROL
-	contThrottle = inputThrottle; //Linear
+	if (Settings::droneNoThrustDown)
+		contThrottle = (inputThrottle + 1.0f) / 2.0f; //Linear, No throttle at -1.0 input value
+	else
+		contThrottle = inputThrottle; //Linear
 
 	 //Negative throttle
 	if (!Settings::drone3DFly && contThrottle < 0.0f) contThrottle = 0.0f;
@@ -33,7 +36,7 @@ void DroneControllerAcro::update(const DroneState &currentState, const float &st
 	float contPitch = Steuerung::calculateDegSecPitch(inputPitch);
 
 	//Input Delta Rotation as Angle Axis
-	Vector3f axisRot = Vector3f(contPitch, contRoll, contYaw) * GAMEPLAY::GET_FRAME_TIME();
+	Vector3f axisRot = Vector3f(contPitch, contRoll, contYaw) * MISC::GET_FRAME_TIME();
 	float norm = axisRot.norm();	//Get Norm
 
 	Quaternionf drot;

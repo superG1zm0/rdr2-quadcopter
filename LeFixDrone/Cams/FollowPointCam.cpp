@@ -3,8 +3,8 @@
 FollowPointCam::FollowPointCam(float d)
 	: distance(d)
 {
-	endPos = Vector3f(0.0f, 0.0f, 0.0f);
-	slerpPos = Vector3f(0.0f, 0.0f, 0.0f);
+	endPos = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+	slerpPos = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
 }
 
 FollowPointCam::~FollowPointCam()
@@ -16,9 +16,9 @@ void FollowPointCam::setDistance(float d)
 	distance = d;
 }
 
-void FollowPointCam::update(const Vector3f& point)
+void FollowPointCam::update(const Eigen::Vector3f& point)
 {
-	float dT = GAMEPLAY::GET_FRAME_TIME();
+	float dT = MISC::GET_FRAME_TIME();
 
 	endPos = (endPos - point).normalized()*distance + point;
 
@@ -30,12 +30,12 @@ void FollowPointCam::update(const Vector3f& point)
 	CAM_X::POINT_CAM_AT_COORD(cam, point);
 }
 
-Vector3f FollowPointCam::getVel()
+Eigen::Vector3f FollowPointCam::getVel()
 {
 	return vel;
 }
 
-Vector3f FollowPointCam::getPos()
+Eigen::Vector3f FollowPointCam::getPos()
 {
 	return slerpPos;
 }

@@ -10,10 +10,10 @@ public:
 	~PID_Vect();
 
 	void reset();
-	void update(const Vector3f &ist, const Vector3f &soll, const float &dT);
-	Vector3f getOutput();
+	void update(const Eigen::Vector3f &ist, const Eigen::Vector3f &soll, const float &dT);
+	Eigen::Vector3f getOutput();
 
 private:
-	Vector3f errorP, errorI, errorD, errorPOld;
+	Eigen::Vector3f errorP, errorI, errorD, errorPOld;
 };
 

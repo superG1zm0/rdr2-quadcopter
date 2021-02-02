@@ -8,14 +8,14 @@ void showNotification(std::string message) {
 }
 
 void showNotification(int &handle, std::string message) {
-	UI::_SET_NOTIFICATION_TEXT_ENTRY("STRING");
-	UI::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&message[0u]);
-	handle = UI::_DRAW_NOTIFICATION(false, false);
+	HUD::BEGIN_TEXT_COMMAND_THEFEED_POST("STRING");
+	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&message[0u]);
+	handle = HUD::END_TEXT_COMMAND_THEFEED_POST_MPTICKER(false, false);
 }
 
 void removeNotification(int &handle)
 {
-	if (handle != 0) UI::_REMOVE_NOTIFICATION(handle);
+	if (handle != 0) HUD::THEFEED_REMOVE_ITEM(handle);
 }
 
 void replaceNotification(int &handle, std::string message)
@@ -27,21 +27,21 @@ void replaceNotification(int &handle, std::string message)
 //Subtitle
 void showSubtitle(std::string text, int msec)
 {
-	UI::BEGIN_TEXT_COMMAND_PRINT("STRING");
-	UI::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&text[0u]);
-	UI::END_TEXT_COMMAND_PRINT(msec, 1);
+	HUD::BEGIN_TEXT_COMMAND_PRINT("STRING");
+	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&text[0u]);
+	HUD::END_TEXT_COMMAND_PRINT(msec, 1);
 }
 
 //Textbox
 void showTextboxTop(std::string text, bool beep) {
-	UI::BEGIN_TEXT_COMMAND_DISPLAY_HELP("STRING");
-	UI::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&text[0u]);
-	UI::END_TEXT_COMMAND_DISPLAY_HELP(0, false, beep, -1);
+	HUD::BEGIN_TEXT_COMMAND_DISPLAY_HELP("STRING");
+	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&text[0u]);
+	HUD::END_TEXT_COMMAND_DISPLAY_HELP(0, false, beep, -1);
 }
 
 //Textbox
 void showTextboxBottom(std::string text, bool beep) {
-	UI::BEGIN_TEXT_COMMAND_DISPLAY_HELP("STRING");
-	UI::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&text[0u]);
-	UI::END_TEXT_COMMAND_DISPLAY_HELP(0, false, beep, -1);
+	HUD::BEGIN_TEXT_COMMAND_DISPLAY_HELP("STRING");
+	HUD::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(&text[0u]);
+	HUD::END_TEXT_COMMAND_DISPLAY_HELP(0, false, beep, -1);
 }
