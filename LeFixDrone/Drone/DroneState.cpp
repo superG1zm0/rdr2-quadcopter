@@ -34,11 +34,13 @@ void DroneState::apply()
 void DroneState::read()
 {
 	//Temporary variable
-	Quaternionf rotTemp = ENTITY_X::GET_ENTITY_QUATERNION(collider) * rotCollider.conjugate();
+	//NOT WORK ==> CANT GET ENTITY QUATERNION
+	//Quaternionf rotTemp = ENTITY_X::GET_ENTITY_QUATERNION(collider) * rotCollider.conjugate();
+	Quaternionf rotTemp = rot;
 
 	//Implicitly determines rotation velocity
 	drot = rot.conjugate() * rotTemp;
-	deltaTime = MISC::GET_FRAME_TIME();
+	deltaTime = GAMEPLAY::GET_FRAME_TIME();
 
 	pos = ENTITY_X::GET_ENTITY_COORDS(collider);
 	rot = rotTemp;

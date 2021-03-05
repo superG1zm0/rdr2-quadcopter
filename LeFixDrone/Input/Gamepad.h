@@ -1,6 +1,7 @@
 #pragma once
 
 #include "inc\natives.h"
+#include "..\nativesExtended.h"
 #include "inc\enums.h"
 #include "..\Settings.h"
 

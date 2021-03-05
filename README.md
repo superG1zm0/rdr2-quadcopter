@@ -1,2 +1,2 @@
-# gta5-quadcopter
-Adds a basic quadcopter sim to GTA V
+# rdr2-quadcopter
+Porting of quadcopter mod from GTA V to RDR 2

@@ -25,6 +25,8 @@ float DegToRad(const float &deg);
 namespace ENTITY_X
 {
 	Eigen::Quaternionf GET_ENTITY_QUATERNION(Entity e);
+	void GET_ENTITY_MATRIX(Entity e, Eigen::Vector3f* rightVector, Eigen::Vector3f* forwardVector, Eigen::Vector3f* upVector, Eigen::Vector3f* pos);
+	Eigen::Vector3f GET_ENTITY_UP_VECTOR(Entity e);
 	void SET_ENTITY_QUATERNION(Entity e, Eigen::Quaternionf q);
 	Eigen::Vector3f GET_ENTITY_COORDS(Entity e);
 	Eigen::Vector3f GET_ENTITY_VELOCITY(Entity e);
@@ -45,16 +47,29 @@ namespace CAM_X
 	void ATTACH_CAM_TO_ENTITY(Camera c, Entity e, Eigen::Vector3f pos, bool isRel);
 }
 
+namespace GAMEPLAY_X
+{
+	Hash JOAAT(char* string);
+	Eigen::Vector3f GET_MODEL_DIMENSIONS(Entity e);
+}
+
+namespace UILOG_X
+{
+	void PRINT_SUBTITLE(const char* text);
+}
+
 namespace GRAPHICS_X
 {
 	void DRAW_RECT(float posX, float posY, float width, float height, ColorRGBA col);
+	void DRAW_RECT(float x, float y, float width, float height, int r, int g, int b, int a);
 	void DRAW_DOT(float posX, float posY, float size, ColorRGBA col);
+	void DRAW_SPRITE(const char* category, const char* sprite, float x, float y, float scalex, float scaley, float rotation, int r, int g, int b, int a);
+	float GET_ASPECT_RATIO(void);
 }
 
 namespace UI_X
 {
-	void DRAW_TEXT(float posX, float posY, float scale, int font, ColorRGBA col, std::string text);
+	void DRAW_TEXT(const char* text, float x, float y, int r, int g, int b, int a, bool centered = false, float size = 0.342f);
 	void SET_TEXT_COLOUR(ColorRGBA col);
 	void SET_TEXT_DROPSHADOW(int distance, ColorRGBA col);
-	void SET_TEXT_EDGE(Hash p0, ColorRGBA col);
 }

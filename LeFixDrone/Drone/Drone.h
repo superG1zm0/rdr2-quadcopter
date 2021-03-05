@@ -52,12 +52,13 @@ private:
 	//Cams
 	Camera cam1, cam3;
 	FollowPointCam camF;
+	Vector3f camDefaultOffsetLocal;
 
 	Blip blip;
 	AudioHandler audio;
 	Object collider, modelCase;
-	Object modelProp[NUM_PROP];
-	Object modelFris[NUM_PROP];
+	Object modelHammer[NUM_PROP];
+	Object modelPlate[NUM_PROP];
 
 	void flip();
 	void unstuck();
@@ -79,7 +80,6 @@ private:
 	//Private Static Const
 	static const float gravity;
 	static const Quaternionf colliderRotLocal;
-	static const Vector3f camDefaultOffsetLocal;
 
 	//Private Static
 	static const Vector3f propPosLocal[NUM_PROP];

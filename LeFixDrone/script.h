@@ -4,8 +4,6 @@
 
 #include <vector>
 
-#include "menu.h"
-
 void ScriptMain();
 
 void initialize();

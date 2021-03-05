@@ -18,7 +18,7 @@ void FollowPointCam::setDistance(float d)
 
 void FollowPointCam::update(const Eigen::Vector3f& point)
 {
-	float dT = MISC::GET_FRAME_TIME();
+	float dT = GAMEPLAY::GET_FRAME_TIME();
 
 	endPos = (endPos - point).normalized()*distance + point;
 

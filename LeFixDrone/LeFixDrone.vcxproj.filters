@@ -33,9 +33,6 @@
     <ClInclude Include="Steuerung.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\UIutils.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -99,25 +96,22 @@
     <ClInclude Include="..\includes\GTAVMenuBase\InstructionalButton.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\menu.h">
+    <ClInclude Include="..\includes\inc\enums.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\menucontrols.h">
+    <ClInclude Include="..\includes\inc\main.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\menukeyboard.h">
+    <ClInclude Include="..\includes\inc\nativeCaller.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\menumemutils.hpp">
+    <ClInclude Include="..\includes\inc\natives.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\menusettings.h">
+    <ClInclude Include="..\includes\inc\types.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\menuutils.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\Scaleform.h">
+    <ClInclude Include="Menu.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -138,9 +132,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Steuerung.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils\UIutils.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Settings.cpp">
@@ -194,22 +185,7 @@
     <ClCompile Include="Utils\INIutils.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\includes\GTAVMenuBase\menu.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\includes\GTAVMenuBase\menucontrols.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\includes\GTAVMenuBase\menukeyboard.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\includes\GTAVMenuBase\menumemutils.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\includes\GTAVMenuBase\menusettings.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\includes\GTAVMenuBase\menuutils.cpp">
+    <ClCompile Include="Menu.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,8 +10,7 @@ using namespace LeFix;
 
 const float Drone::gravity(20.0f); //Force has factor 0.5f
 
-const Vector3f Drone::camDefaultOffsetLocal(0.0f, 0.05f, 0.00f); //Default Camera Position
-const Quaternionf Drone::colliderRotLocal = Quaternionf(AngleAxisf(DegToRad(90.0f), Vector3f(0.0f, 1.0f, 0.0f))); //Rotation of collider //Indev angle 90!!
+const Quaternionf Drone::colliderRotLocal = Quaternionf(AngleAxisf(DegToRad(90.0f), Vector3f::UnitX()) * AngleAxisf(DegToRad(90.0f), Vector3f::UnitY())); //Rotation of collider
 const Vector3f Drone::propPosLocal[NUM_PROP] = { Vector3f(0.5f, 0.5f, 0.0f), Vector3f(0.5f, -0.5f, 0.0f), Vector3f(-0.5f, -0.5f, 0.0f), Vector3f(-0.5f, 0.5f, 0.0f) };
 
 float Drone::maxThrust, Drone::dragCoef; //calculated
@@ -96,75 +95,73 @@ void Drone::applyVisual()
 	setTrails(Settings::showTrails);
 
 	//Set collider invisble before model visibility is set because model is attached to it
-	ENTITY::SET_ENTITY_VISIBLE(collider, Settings::showCollider, FALSE);
+	ENTITY::SET_ENTITY_VISIBLE(collider, Settings::showCollider);
 
-	//Attached stuff (frisbees and mics) is automatically set
-	ENTITY::SET_ENTITY_VISIBLE(modelCase, Settings::showModel, FALSE);
+	//Attached stuff (plate and hammer) is automatically set
+	ENTITY::SET_ENTITY_VISIBLE(modelCase, Settings::showModel);
 }
 
 Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 	: camF(5.0f)
 {
-	//p_rc_handset 2553089994 //prop_cs_power_cell 1456723945 //prop_c4_final 3028688567 //prop_microphone_02 933500565 //p_ld_frisbee_01 3024733075
-	Hash colliderHash = -589090886; //Big box 2781083456
+	Hash colliderHash = GAMEPLAY_X::JOAAT("p_cs_suitcase02x");
 
 	//Load Collision Box
 	DWORD timeout = GetTickCount() + 5000;
-	while (!(STREAMING::HAS_MODEL_LOADED(colliderHash) && STREAMING::HAS_COLLISION_FOR_MODEL_LOADED(colliderHash)) && timeout > GetTickCount())
+	while (!(STREAMING::HAS_MODEL_LOADED(colliderHash)) && timeout > GetTickCount())
 	{
-		STREAMING::REQUEST_MODEL(colliderHash);
-		STREAMING::REQUEST_COLLISION_FOR_MODEL(colliderHash);
+		STREAMING::REQUEST_MODEL(colliderHash, FALSE);
+		//STREAMING::REQUEST_COLLISION_FOR_MODEL(colliderHash);
 		WAIT(0);
 	}
 
 	//Collision
-	collider = OBJECT::CREATE_OBJECT(colliderHash, pos.x(), pos.y(), pos.z(), FALSE, TRUE, TRUE);
+	collider = OBJECT::CREATE_OBJECT(colliderHash, pos.x(), pos.y(), pos.z(), TRUE, TRUE, FALSE, FALSE, FALSE);
 	ENTITY::SET_ENTITY_COLLISION(collider, TRUE, TRUE);
-	ENTITY::SET_ENTITY_RECORDS_COLLISIONS(collider, TRUE);
-	ENTITY::SET_ENTITY_VISIBLE(collider, TRUE, FALSE);
+	ENTITY::SET_ENTITY_VISIBLE(collider, TRUE);
 	OBJECT::SET_OBJECT_PHYSICS_PARAMS(collider, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 4.0f, 4.0f, 0.0f, -1.0f, 20.0f, 0.3f); //-1.0 Values changed elsewhere
 
 	//Model
-	modelCase = OBJECT::CREATE_OBJECT(3028688567, 0.0f, 0.0f, 0.0f, FALSE, TRUE, FALSE);
+	Hash modelHash = GAMEPLAY_X::JOAAT("p_ammobox01x");
+	modelCase = OBJECT::CREATE_OBJECT(modelHash, 0.0f, 0.0f, 0.0f, TRUE, TRUE, FALSE, FALSE, FALSE);
 	ENTITY::SET_ENTITY_COLLISION(modelCase, FALSE, FALSE);
-	ENTITY::ATTACH_ENTITY_TO_ENTITY(modelCase, collider, 0, 0.04f, 0.0f, 0.0f, -90.0f, -90.0f, 0.0f, FALSE, TRUE, FALSE, FALSE, 0, TRUE);
+
+	Vector3f colliderUpVector = ENTITY_X::GET_ENTITY_UP_VECTOR(collider);
+	Vector3f colliderDim = GAMEPLAY_X::GET_MODEL_DIMENSIONS(collider);
+
+	Vector3f modelCaseUpVector = Quaternionf(AngleAxisf(DegToRad(-90), Vector3f::UnitX())) * ENTITY_X::GET_ENTITY_UP_VECTOR(modelCase);
+	Vector3f modelCaseDim = GAMEPLAY_X::GET_MODEL_DIMENSIONS(modelCase);
+
+	Vector3f modelCasePos = colliderUpVector * colliderDim.z() / 2.0f - modelCaseUpVector * modelCaseDim.z() / 2.0f;
+
+	ENTITY::ATTACH_ENTITY_TO_ENTITY(modelCase, collider, 0, modelCasePos.x(), modelCasePos.y(), modelCasePos.z(), -90.0f, 0.0f, 0.0f, FALSE, TRUE, FALSE, FALSE, 0, TRUE, FALSE, FALSE);
 
 	//Mics
 	for (int n = 0; n < 4; n++)
 	{
-		modelProp[n] = OBJECT::CREATE_OBJECT(933500565, 0.0f, 0.0f, 0.0f, FALSE, TRUE, FALSE);
-		ENTITY::SET_ENTITY_COLLISION(modelProp[n], FALSE, FALSE);
-		float x, z, ry;
+		modelHammer[n] = OBJECT::CREATE_OBJECT(GAMEPLAY_X::JOAAT("p_hammer01x"), 0.0f, 0.0f, 0.0f, TRUE, TRUE, FALSE, FALSE, FALSE);
+		modelPlate[n] = OBJECT::CREATE_OBJECT(GAMEPLAY_X::JOAAT("p_plate01x"), 0.0f, 0.0f, 0.0f, TRUE, TRUE, FALSE, FALSE, FALSE);
+
+		float ry, rz;
 		switch (n)
 		{
-		case LeFix::FR: ry =  90.0f; x =  0.062f; z =  0.090f; break;
-		case LeFix::BR: ry = 135.0f; x =  0.095f; z = -0.080f; break;
-		case LeFix::BL: ry = 225.0f; x = -0.095f; z = -0.080f; break;
-		case LeFix::FL: ry = 270.0f; x = -0.062f; z =  0.090f; break;
+		case LeFix::FR: ry = 90.0f; rz = 45.0f; break;
+		case LeFix::BR: ry = 90.0f; rz = -45.0f; break;
+		case LeFix::BL: ry = 90.0f; rz = 135.0f; break;
+		case LeFix::FL: ry = 90.0f; rz = -135.0f; break;
 		}
-		ENTITY::ATTACH_ENTITY_TO_ENTITY(modelProp[n], modelCase, 0, x, 0.030f, z, 0.0f, ry, 0.0f, FALSE, TRUE, FALSE, FALSE, 0, TRUE);
-	}
-
-	//Frisbees
-	float rx = 90.0f;
-	float ry[4] = { -90.0f, 135.0f, -135.0f, 90.0f };
-	float rz = 0.0f;
-	float x[4] = { 0.17f, 0.17f, -0.17f, -0.17f };
-	float y = 0.012f;
-	float z[4] = { 0.091f, -0.162f, -0.162f, 0.091f };
-
-	for (int n = 0; n < 4; n++)
-	{
-		modelFris[n] = OBJECT::CREATE_OBJECT(3024733075, 0.0f, 0.0f, 0.0f, FALSE, TRUE, FALSE);
-		ENTITY::SET_ENTITY_COLLISION(modelFris[n], FALSE, FALSE);
-		ENTITY::ATTACH_ENTITY_TO_ENTITY(modelFris[n], modelCase, 0, x[n], y, z[n], rx, ry[n], rz, FALSE, TRUE, FALSE, FALSE, 0, TRUE);
-		ENTITY::SET_ENTITY_ALPHA(modelFris[n], 50, FALSE);
+		ENTITY::ATTACH_ENTITY_TO_ENTITY(modelHammer[n], modelCase, 0, 0.0f, 0.0f, 0.0f, 0.0f, ry, rz, FALSE, TRUE, FALSE, FALSE, 0, TRUE, FALSE, FALSE);
+		Vector3f upVector = Quaternionf(AngleAxisf(DegToRad(-90), Vector3f::UnitX())) * ENTITY_X::GET_ENTITY_UP_VECTOR(modelHammer[n]);
+		Vector3f dim = GAMEPLAY_X::GET_MODEL_DIMENSIONS(modelHammer[n]);
+		Vector3f pos = upVector * (dim.z() - 0.03f);
+		ENTITY::ATTACH_ENTITY_TO_ENTITY(modelPlate[n], modelCase, 0, pos.x(), pos.y(), pos.z() + 0.08f, 0.0f, 0.0f, 180.0f, FALSE, TRUE, FALSE, FALSE, 0, TRUE, FALSE, FALSE);
 	}
 
 	//Blip
-	blip = HUD::ADD_BLIP_FOR_ENTITY(collider);
-	HUD::SET_BLIP_SPRITE(blip, 8); // 4 dot
-	HUD::SET_BLIP_ROTATION(blip, 45);
+	//NOT WORK
+	/*blip = RADAR::ADD_BLIP_FOR_ENTITY(collider);
+	RADAR::SET_BLIP_SPRITE(blip, 8, FALSE); // 4 dot
+	RADAR::SET_BLIP_ROTATION(blip, 45);*/
 
 	//Cameras
 	cam1 = CAM::CREATE_CAM("DEFAULT_SCRIPTED_CAMERA", true);
@@ -172,8 +169,12 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 	CAM::SET_CAM_NEAR_CLIP(cam1, 0.05f);
 	CAM::SET_CAM_NEAR_CLIP(cam3, 0.05f);
 	CAM::SET_CAM_NEAR_CLIP(camF.cam, 0.05f);
-	CAM_X::ATTACH_CAM_TO_ENTITY(cam1, collider, camDefaultOffsetLocal, true);
-	CAM_X::ATTACH_CAM_TO_ENTITY(cam3, collider, camDefaultOffsetLocal, true); //Should be changed in refreshDynamicSettings
+
+	camDefaultOffsetLocal = Vector3f(colliderDim.z() / 2.0f, 0.0f, 0.0f);
+	Vector3f camPosColld = colliderRotLocal.conjugate().toRotationMatrix() * camDefaultOffsetLocal;
+
+	CAM_X::ATTACH_CAM_TO_ENTITY(cam1, collider, camPosColld, true);
+	CAM_X::ATTACH_CAM_TO_ENTITY(cam3, collider, camPosColld, true); //Should be changed in refreshDynamicSettings
 
 	//Audio
 	audio.playSources();
@@ -192,7 +193,7 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 Drone::~Drone()
 {
 	delete controller;
-	HUD::REMOVE_BLIP(&blip);
+	//RADAR::REMOVE_BLIP(&blip);
 	audio.stopSources();
 	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE, 0);
 	CAM::DESTROY_CAM(cam1, true);
@@ -201,8 +202,8 @@ Drone::~Drone()
 	OBJECT::DELETE_OBJECT(&modelCase);
 	for (int x = 0; x < 4; x++)
 	{
-		OBJECT::DELETE_OBJECT(modelProp+x);
-		OBJECT::DELETE_OBJECT(modelFris+x);
+		OBJECT::DELETE_OBJECT(modelHammer+x);
+		OBJECT::DELETE_OBJECT(modelPlate+x);
 	}
 }
 
@@ -233,7 +234,7 @@ void Drone::update(Gamepad &gamepad)
 
 		if ((currentState.vel - oldState.vel).squaredNorm() > (Settings::droneMaxVel*Settings::droneMaxVel/36.0f) )
 		{
-			if(Settings::gamepadVib) PAD::SET_PAD_SHAKE(0, 100, 200);
+			if(Settings::gamepadVib) CONTROLS::SET_PAD_SHAKE(0, 100, 200);
 			//Screen effect when collision delta v is above maxVel/6
 			if(Settings::camMode == camModeD1) TimeCycleManager::setTimecycleFadeOut("NG_filmic21", 0.5f);
 		}
@@ -325,7 +326,7 @@ void Drone::setTrails(bool doEnable)
 			for (int n = 0; n < NUM_PROP; n++)
 			{
 				GRAPHICS::USE_PARTICLE_FX_ASSET(asset);
-				ptfx[n][0] = GRAPHICS::START_PARTICLE_FX_LOOPED_ON_ENTITY(effect, modelFris[n], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, FALSE, FALSE, FALSE);
+				ptfx[n][0] = GRAPHICS::START_PARTICLE_FX_LOOPED_ON_ENTITY(effect, modelPlate[n], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, FALSE, FALSE, FALSE);
 				GRAPHICS::SET_PARTICLE_FX_LOOPED_COLOUR(ptfx[n][0], 1.0f, 0.5f, 0.0f, FALSE);
 			}
 
@@ -346,14 +347,14 @@ void Drone::setTrails(bool doEnable)
 				for (int n = 0; n < NUM_PROP; n++)
 				{
 					GRAPHICS::USE_PARTICLE_FX_ASSET(asset);
-					ptfx[n][1] = GRAPHICS::START_PARTICLE_FX_LOOPED_ON_ENTITY(effect, modelFris[n], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, FALSE, FALSE, FALSE);
+					ptfx[n][1] = GRAPHICS::START_PARTICLE_FX_LOOPED_ON_ENTITY(effect, modelPlate[n], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, FALSE, FALSE, FALSE);
 					GRAPHICS::SET_PARTICLE_FX_LOOPED_COLOUR(ptfx[n][1], 1.0f, 0.5f, 0.0f, FALSE);
 				}
 			}
 		}
 		else
 		{
-			showSubtitle("Could not load ptfx asset. Timeout after 3s.", 1000);
+			UILOG_X::PRINT_SUBTITLE("Could not load ptfx asset. Timeout after 3s.");
 		}
 	}
 	else
@@ -373,10 +374,10 @@ void Drone::updateMomentum(const Quaternionf &desiredRot)
 {
 	if (Settings::pidEnable)
 	{
-		slerpRot = slerpRot.slerp(MISC::GET_FRAME_TIME() * 25.0f, desiredRot); //25 Frames Slerp desiredRot, should kill overrotation of pid
+		slerpRot = slerpRot.slerp(GAMEPLAY::GET_FRAME_TIME() * 25.0f, desiredRot); //25 Frames Slerp desiredRot, should kill overrotation of pid
 
 		//Use PID
-		pidRot.update(currentState.rot, slerpRot, MISC::GET_FRAME_TIME());
+		pidRot.update(currentState.rot, slerpRot, GAMEPLAY::GET_FRAME_TIME());
 		Vector3f momentum = pidRot.getOutput();
 
 		//Apply PID Output momentum
@@ -464,20 +465,20 @@ void Drone::updateMinimap()
 	{
 		//use cam1
 		heading = (int)getHeading(cam1RotGlobal._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
-		HUD::LOCK_MINIMAP_ANGLE(heading);
+		RADAR::LOCK_MINIMAP_ANGLE(heading);
 	}
 	else if (CAM::IS_CAM_RENDERING(cam3))
 	{
 		//use cam3
 		heading = (int)getHeading(cam3RotGlobal._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
-		HUD::LOCK_MINIMAP_ANGLE(heading);
+		RADAR::LOCK_MINIMAP_ANGLE(heading);
 	}
 	else
 	{
 		//use drone (don't rotate minimap just set blip)
 		heading = (int)getHeading(currentState.rot._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
 	}
-	HUD::SET_BLIP_ROTATION(blip, heading + 45);
+	RADAR::SET_BLIP_ROTATION(blip, heading + 45);
 	
 }
 

@@ -1,7 +1,7 @@
 /*
-	THIS FILE IS A PART OF GTA V SCRIPT HOOK SDK
+	THIS FILE IS A PART OF RDR 2 SCRIPT HOOK SDK
 				http://dev-c.com
-			(C) Alexander Blade 2015
+			(C) Alexander Blade 2019
 */
 
 #pragma once
@@ -35,14 +35,13 @@ typedef int ColourIndex;
 typedef int Sphere;
 typedef int ScrHandle;
 
-#pragma pack(push, 1)
-typedef struct
+#define ALIGN8 __declspec(align(8))
+
+struct Vector3
 {
-	float x;
-	DWORD _paddingx;
-	float y;
-	DWORD _paddingy;
-	float z;
-	DWORD _paddingz;
-} Vector3;
-#pragma pack(pop)
+	ALIGN8 float x;
+	ALIGN8 float y;
+	ALIGN8 float z;
+};
+
+static_assert(sizeof(Vector3) == 24, "");

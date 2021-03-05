@@ -2,23 +2,23 @@
 
 void Gamepad::refresh()
 {
-	button_unstuck	= TRUE == PAD::IS_CONTROL_JUST_RELEASED(2, eControl::ControlFrontendY);
-	button_flip		= TRUE == PAD::IS_CONTROL_JUST_RELEASED(2, eControl::ControlFrontendX);
+	button_unstuck	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_Y"));
+	button_flip		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_X"));
 
-	button_cam		= TRUE == PAD::IS_CONTROL_JUST_RELEASED(2, eControl::ControlNextCamera);
+	button_cam		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, 0);
 
-	button_accept	= TRUE == PAD::IS_CONTROL_PRESSED(2, eControl::ControlFrontendAccept);
-	button_cancel	= TRUE == PAD::IS_CONTROL_PRESSED(2, eControl::ControlFrontendCancel);
+	button_accept	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_ACCEPT"));
+	button_cancel	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_CANCEL"));
 
-	button_up		= TRUE == PAD::IS_CONTROL_PRESSED(2, eControl::ControlScriptPadUp);
-	button_down		= TRUE == PAD::IS_CONTROL_PRESSED(2, eControl::ControlScriptPadDown);
-	button_right	= TRUE == PAD::IS_CONTROL_PRESSED(2, eControl::ControlScriptPadRight);
-	button_left		= TRUE == PAD::IS_CONTROL_PRESSED(2, eControl::ControlScriptPadLeft);
+	button_up		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_UP"));
+	button_down		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_DOWN"));
+	button_right	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT"));
+	button_left		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_LEFT"));
 
-	stick_left_x	= PAD::GET_CONTROL_NORMAL(2, eControl::ControlMoveLeftRight);
-	stick_left_y	= -PAD::GET_CONTROL_NORMAL(2, eControl::ControlMoveUpDown);
-	stick_right_x	= PAD::GET_CONTROL_NORMAL(2, eControl::ControlLookLeftRight);
-	stick_right_y	= -PAD::GET_CONTROL_NORMAL(2, eControl::ControlLookUpDown);
+	stick_left_x	= CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_AXIS_X"));
+	stick_left_y	= -CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_AXIS_Y"));
+	stick_right_x	= CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT_AXIS_X"));
+	stick_right_y	= -CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT_AXIS_Y"));
 
 	if (Settings::gamepadInvPitch) stick_right_y *= -1.0f;
 }

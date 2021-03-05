@@ -11,27 +11,31 @@ Clone::Clone(Ped original)
 	ENTITY::SET_ENTITY_HEADING(ped, ENTITY::GET_ENTITY_HEADING(original));
 
 	//Blip
-	blip = HUD::ADD_BLIP_FOR_ENTITY(ped);
-	HUD::SET_BLIP_SPRITE(blip, 197); //Yoga
+	//NOT WORK
+	//blip = HUD::ADD_BLIP_FOR_ENTITY(ped);
+	//HUD::SET_BLIP_SPRITE(blip, 197); //Yoga
 
 	//p_rc_handset 2553089994
 	//SKEL_R_Hand 0xdead
-	objController = OBJECT::CREATE_OBJECT(2553089994, 0.0f, 0.0f, 0.0f, FALSE, TRUE, FALSE);
-	ENTITY::ATTACH_ENTITY_TO_ENTITY(objController, ped, PED::GET_PED_BONE_INDEX(ped, 0xdead), 0.16f, 0.07f, -0.12f, 180.0f, -105.0f, 5.0f, FALSE, FALSE, FALSE, TRUE, 0, TRUE);
+	//NOT WORK
+	//objController = OBJECT::CREATE_OBJECT(2553089994, 0.0f, 0.0f, 0.0f, FALSE, TRUE, FALSE, FALSE, FALSE);
+	//ENTITY::ATTACH_ENTITY_TO_ENTITY(objController, ped, PED::GET_PED_BONE_INDEX(ped, 0xdead), 0.16f, 0.07f, -0.12f, 180.0f, -105.0f, 5.0f, FALSE, FALSE, FALSE, TRUE, 0, TRUE, FALSE, FALSE);
 
 	cam1 = CAM::CREATE_CAM("DEFAULT_SCRIPTED_CAMERA", true);
 	CAM::SET_CAM_NEAR_CLIP(cam1, 0.6f);
 	//Head 0x796e //INDEV
 	CAM_X::ATTACH_CAM_TO_ENTITY(cam1, ped, Vector3f(0.0f, 0.0f, 0.8f), true);
 
-	playAnimations();
-	refreshSettingsDynamic();
+	//NOT WORK
+	//playAnimations();
+	//refreshSettingsDynamic();
 }
 
 Clone::~Clone()
 {
 	//Delete Blip
-	HUD::REMOVE_BLIP(&blip);
+	//NOT WORK
+	//HUD::REMOVE_BLIP(&blip);
 
 	//Delete Controller
 	ENTITY::DELETE_ENTITY(&objController);
@@ -114,7 +118,8 @@ void Clone::playAnimations()
 
 	//Intro
 	//AI::TASK_PLAY_ANIM(ped, "mini@strip_club@lap_dance_2g@ld_2g_reach", "ld_2g_sit_idle", 8.0, 0.0, -1, 1, 0.0f, false, false, false);
-	TASK::TASK_PLAY_ANIM(ped, "missarmenian3", "jimmy_playingvideogame_loop_d", 8.0, 0.0, -1, 17, 0.0f, false, false, false);
+	//NOT WORK
+	//TASK::TASK_PLAY_ANIM(ped, "missarmenian3", "jimmy_playingvideogame_loop_d", 8.0, 0.0, -1, 17, 0.0f, false, false, false);
 
 	/*
 	float speed > normal speed is 8.0f

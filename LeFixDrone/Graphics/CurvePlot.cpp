@@ -58,7 +58,7 @@ void CurvePlot::draw()
 	static int font = 0; //Standard Font (like Arial)
 	static float text_scale = 0.8f * sizeRct; //Size
 
-	float ratio = GRAPHICS::_GET_ASPECT_RATIO(FALSE);
+	float ratio = GRAPHICS_X::GET_ASPECT_RATIO();
 
 	//Draw background
 	GRAPHICS_X::DRAW_RECT(posX, posY - 0.5f*(sizeRct + sizeBrd), (sizeRct + 2 * sizeBrd) / ratio, sizeBrd, colBrd); //Top
@@ -70,15 +70,22 @@ void CurvePlot::draw()
 
 	//Draw Text Pitch
 	float textPosX1, textPosX2, textPosY;
+	char buffer[10];
 	textPosX1 = posX + (sizeBrd - 0.5f*sizeRct) / ratio;
 	textPosX2 = textPosX1 + text_scale * 0.24f / ratio;
 	textPosY = posY + (sizeBrd - 0.5f*sizeRct);
-	UI_X::DRAW_TEXT(textPosX1, textPosY, text_scale, font, colDot[ePv], "PITCH");
-	UI_X::DRAW_TEXT(textPosX2, textPosY, text_scale, font, colDot[ePv], std::to_string(maxPitch)); textPosY += text_scale * 0.06f;
-	UI_X::DRAW_TEXT(textPosX1, textPosY, text_scale, font, colDot[eRv], "ROLL" );
-	UI_X::DRAW_TEXT(textPosX2, textPosY, text_scale, font, colDot[eRv], std::to_string(maxRoll )); textPosY += text_scale * 0.06f;
-	UI_X::DRAW_TEXT(textPosX1, textPosY, text_scale, font, colDot[eYv], "YAW"  );
-	UI_X::DRAW_TEXT(textPosX2, textPosY, text_scale, font, colDot[eYv], std::to_string(maxYaw  ));
+
+	UI_X::DRAW_TEXT("PITCH", textPosX1, textPosY, 0, 255, 0, 200, false, text_scale);
+	sprintf_s(buffer, "%d", maxPitch);
+	UI_X::DRAW_TEXT(buffer, textPosX2, textPosY, 0, 255, 0, 200, false, text_scale); textPosY += text_scale * 0.06f;
+
+	UI_X::DRAW_TEXT("ROLL", textPosX1, textPosY, 255, 0, 0, 200, false, text_scale);
+	sprintf_s(buffer, "%d", maxRoll);
+	UI_X::DRAW_TEXT(buffer, textPosX2, textPosY, 255, 0, 0, 200, false, text_scale); textPosY += text_scale * 0.06f;
+
+	UI_X::DRAW_TEXT("YAW", textPosX1, textPosY, 0, 0, 255, 200, false, text_scale);
+	sprintf_s(buffer, "%d", maxYaw);
+	UI_X::DRAW_TEXT(buffer, textPosX2, textPosY, 0, 0, 255, 200, false, text_scale);
 
 	//Draw Points
 	for (int n = 0; n < NUM_POINTS; n++)
