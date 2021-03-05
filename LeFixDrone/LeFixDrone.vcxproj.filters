@@ -93,9 +93,6 @@
     <ClInclude Include="Utils\INIutils.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="..\includes\GTAVMenuBase\InstructionalButton.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\includes\inc\enums.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>

@@ -59,7 +59,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\includes\GTAVMenuBase\InstructionalButton.h" />
     <ClInclude Include="..\includes\inc\enums.h" />
     <ClInclude Include="..\includes\inc\main.h" />
     <ClInclude Include="..\includes\inc\nativeCaller.h" />
