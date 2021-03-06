@@ -6,9 +6,9 @@ Clone::Clone(Ped original)
 	ped = PED::CLONE_PED(original, 0.0f, FALSE, TRUE);
 
 	//Move Clone to original
-	ENTITY_X::SET_ENTITY_COORDS(ped, ENTITY_X::GET_ENTITY_COORDS(original) + Vector3f(0.0f, 0.0f, -0.45f));
-	ENTITY_X::SET_ENTITY_QUATERNION(ped, ENTITY_X::GET_ENTITY_QUATERNION(original));
-	ENTITY::SET_ENTITY_HEADING(ped, ENTITY::GET_ENTITY_HEADING(original));
+	//ENTITY_X::SET_ENTITY_COORDS(ped, ENTITY_X::GET_ENTITY_COORDS(original) + Vector3f(0.0f, 0.0f, -0.45f));
+	//ENTITY_X::SET_ENTITY_QUATERNION(ped, ENTITY_X::GET_ENTITY_QUATERNION(original));
+	//ENTITY::SET_ENTITY_HEADING(ped, ENTITY::GET_ENTITY_HEADING(original));
 
 	//Blip
 	//NOT WORK

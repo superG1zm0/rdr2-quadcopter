@@ -11,7 +11,7 @@ float Settings::audioVolume = 0.3f;
 //VISUAL
 bool Settings::showCollider = false;
 bool Settings::showModel = true;
-bool Settings::showTrails = true;
+bool Settings::showTrails = false;
 bool Settings::showStickCam = true;
 
 //GAMEPAD  
@@ -52,7 +52,7 @@ float Settings::physxGScale = 1.0f;
 bool Settings::physxColl = true;
 
 //PID
-bool Settings::pidEnable = true;
+bool Settings::pidEnable = false;
 float Settings::pidP = 1.5f;
 float Settings::pidI = 0.0f;
 float Settings::pidD = 0.8f;
@@ -164,7 +164,7 @@ void Settings::Load() {
 	gamepadInvPitch = settings.GetBoolValue("GAMEPAD", "invertedCam", false);
 
 	//PID
-	pidEnable = settings.GetBoolValue("PID", "enable", true);
+	pidEnable = settings.GetBoolValue("PID", "enable", false);
 	pidP = settings.GetDoubleValue("PID", "p", 1.5);
 	pidI = settings.GetDoubleValue("PID", "i", 0.0);
 	pidD = settings.GetDoubleValue("PID", "d", 0.8);
@@ -174,7 +174,7 @@ void Settings::Load() {
 	physxGScale = settings.GetDoubleValue("PHYSX", "gscale", 1.0);
 
 	//VISUAL
-	showTrails = settings.GetBoolValue("VISUAL", "trails", true);
+	showTrails = settings.GetBoolValue("VISUAL", "trails", false);
 	showStickCam = settings.GetBoolValue("VISUAL", "sticks", true);
 	showModel = settings.GetBoolValue("VISUAL", "model", true);
 	showCollider = settings.GetBoolValue("VISUAL", "colli", false);
