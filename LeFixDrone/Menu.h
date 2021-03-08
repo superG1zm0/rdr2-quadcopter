@@ -1,5 +1,6 @@
 #pragma once
 #include "nativesExtended.h"
+#include <iomanip>
 
 class Menu
 {
@@ -13,7 +14,7 @@ public:
 	void addSubmenuOption(const char* option, int submenu, const char* details = NULL);
 	bool addBoolOption(const char* option, bool* var, const char* details = NULL);
 	bool addIntOption(const char* option, int* var, int min, int max, int step = 1, const char* details = NULL);
-	bool addFloatOption(const char* option, float* var, float min, float max, float step = 1.0f, const char* details = NULL);
+	bool addFloatOption(const char* option, float* var, float min, float max, float step = 1.0f, int precision = 3, const char* details = NULL);
 	bool addStringOption(const char* option, const char* var, int* intvar, int elementCount, const char* details = NULL);
 	void resetVars();
 	void ButtonMonitoring();

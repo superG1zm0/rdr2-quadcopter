@@ -1,5 +1,4 @@
 #include "menu.h"
-#include "nativesExtended.h"
 
 Menu::Menu()
 {
@@ -128,9 +127,9 @@ bool Menu::addIntOption(const char* option, int* var, int min, int max, int step
 	return false;
 }
 
-bool Menu::addFloatOption(const char* option, float* var, float min, float max, float step, const char* details) {
+bool Menu::addFloatOption(const char* option, float* var, float min, float max, float step, int precision, const char* details) {
 	char buffer[64];
-	snprintf(buffer, 64, "%s < %.03f >", option, *var);
+	snprintf(buffer, 64, "%s < %.*f >", option, precision, *var);
 	addOption(buffer);
 	if (currentOption == optionCount) {
 		strDetails = details;
@@ -138,14 +137,28 @@ bool Menu::addFloatOption(const char* option, float* var, float min, float max, 
 			if (*var <= min)
 				*var = max;
 			else
+			{
 				*var -= step;
+				std::ostringstream oss;
+				oss << std::setprecision(precision);
+				oss << std::fixed;
+				oss << *var;
+				*var = std::stof(oss.str());
+			}
 			return true;
 		}
 		else if (rightPress) {
 			if (*var >= max)
 				*var = min;
 			else
+			{
 				*var += step;
+				std::ostringstream oss;
+				oss << std::setprecision(precision);
+				oss << std::fixed;
+				oss << *var;
+				*var = std::stof(oss.str());
+			}
 			return true;
 		}
 	}

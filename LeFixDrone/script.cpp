@@ -175,7 +175,7 @@ void updateMenu()
 	case Main_Menu:
 		menu.addTitle("Quadcopter");
 		menu.addHeader("v1.0");
-		menu.addFloatOption("Volume", &Settings::audioVolume, 0.0f, 1.0f, 0.1f, "Global volume for all mod-related sounds.");
+		menu.addFloatOption("Volume", &Settings::audioVolume, 0.0f, 1.0f, 0.1f, 1, "Global volume for all mod-related sounds.");
 		menu.addSubmenuOption("Camera", cameramenu, "Settings for all camera modes.");
 		menu.addSubmenuOption("Control", controlmenu, "Settings for conversion of gamepad output to drone\ninput.");
 		menu.addSubmenuOption("Drone", dronemenu, "Drone specific settings.");
@@ -219,8 +219,8 @@ void updateMenu()
 			case LeFix::camModeD3:
 				d = d || menu.addIntOption("Field of View", &Settings::camDrone3FOV, 60, 120);
 				d = d || menu.addIntOption("Camera Tilt", &Settings::camDrone3Tilt, -90, 90, 1, "To compensate the attack angle and better match\nthe actual flight direction. For racing around 30.");
-				d = d || menu.addFloatOption("Camera Y Position", &Settings::camDrone3YPos, -5.0f, 0.0f, 0.05f);
-				d = d || menu.addFloatOption("amera Z Position", &Settings::camDrone3ZPos, -2.0f, 2.0f, 0.05f);
+				d = d || menu.addFloatOption("Camera Y Position", &Settings::camDrone3YPos, -5.0f, 0.0f, 0.05f, 2);
+				d = d || menu.addFloatOption("Camera Z Position", &Settings::camDrone3ZPos, -2.0f, 2.0f, 0.05f, 2);
 				break;
 			case LeFix::camModeDF:
 				break;
@@ -243,13 +243,13 @@ void updateMenu()
 		b = false;
 
 		//Options
-		b = b || menu.addFloatOption("RC Rate PR", &Settings::contRcRatePR, 0.1f, 3.0f, 0.1f, "Linear factor for Pitch and Roll.");
-		b = b || menu.addFloatOption("RC Rate Y", &Settings::contRcRateY, 0.1f, 3.0f, 0.1f, "Linear factor for Yaw.");
-		b = b || menu.addFloatOption("Expo PR", &Settings::contExpoPR, 0.0f, 1.0f, 0.02f, "Vary linear and cubic portion of curve which affects\nsmall inputs but doesn't the change max rotation\nvelocity.");
-		b = b || menu.addFloatOption("Expo Y", &Settings::contExpoY, 0.0f, 1.0f, 0.02f, "Vary linear and cubic portion of curve which affects\nsmall inputs but doesn't the change max rotation\nvelocity.");
-		b = b || menu.addFloatOption("Rate P(itch)", &Settings::contRateP, 0.0f, 0.98f, 0.02f, "Greatly increases maximum rotation velocity without\nchanging curve at low inputs alot. Also known as\nsuper expo.");
-		b = b || menu.addFloatOption("Rate R(oll)", &Settings::contRateR, 0.0f, 0.98f, 0.02f, "Greatly increases maximum rotation velocity without\nchanging curve at low inputs alot. Also known as\nsuper expo.");
-		b = b || menu.addFloatOption("Rate Y(aw)", &Settings::contRateY, 0.0f, 0.98f, 0.02f, "Greatly increases maximum rotation velocity without\nchanging curve at low inputs alot. Also known as\nsuper expo.");
+		b = b || menu.addFloatOption("RC Rate PR", &Settings::contRcRatePR, 0.1f, 3.0f, 0.1f, 1, "Linear factor for Pitch and Roll.");
+		b = b || menu.addFloatOption("RC Rate Y", &Settings::contRcRateY, 0.1f, 3.0f, 0.1f, 1, "Linear factor for Yaw.");
+		b = b || menu.addFloatOption("Expo PR", &Settings::contExpoPR, 0.0f, 1.0f, 0.02f, 2, "Vary linear and cubic portion of curve which affects\nsmall inputs but doesn't the change max rotation\nvelocity.");
+		b = b || menu.addFloatOption("Expo Y", &Settings::contExpoY, 0.0f, 1.0f, 0.02f, 2, "Vary linear and cubic portion of curve which affects\nsmall inputs but doesn't the change max rotation\nvelocity.");
+		b = b || menu.addFloatOption("Rate P(itch)", &Settings::contRateP, 0.0f, 0.98f, 0.02f, 2, "Greatly increases maximum rotation velocity without\nchanging curve at low inputs alot. Also known as\nsuper expo.");
+		b = b || menu.addFloatOption("Rate R(oll)", &Settings::contRateR, 0.0f, 0.98f, 0.02f, 2, "Greatly increases maximum rotation velocity without\nchanging curve at low inputs alot. Also known as\nsuper expo.");
+		b = b || menu.addFloatOption("Rate Y(aw)", &Settings::contRateY, 0.0f, 0.98f, 0.02f, 2, "Greatly increases maximum rotation velocity without\nchanging curve at low inputs alot. Also known as\nsuper expo.");
 
 		//Apply changes
 		if(b) curvePlot.refreshData();
@@ -268,9 +268,9 @@ void updateMenu()
 		c = false;
 
 		//Options
-		m = m || menu.addFloatOption("Mass", &Settings::droneMass, 0.1f, 10.0f, 0.1f, "Drone mass");
-		s = s || menu.addFloatOption("Max rel. Load", &Settings::droneMaxRelLoad, 0.0f, 5.0f, 0.1f, "Maximum extra load the drone is capable to carry.");
-		s = s || menu.addFloatOption("Max Velocity", &Settings::droneMaxVel, 10.0f, 200.0f, 1.0f, "Maximum horizontal velocity the drone can achieve.\nImplicitly determines the drag coefficient.");
+		m = m || menu.addFloatOption("Mass", &Settings::droneMass, 0.1f, 10.0f, 0.1f, 1, "Drone mass");
+		s = s || menu.addFloatOption("Max rel. Load", &Settings::droneMaxRelLoad, 0.0f, 5.0f, 0.1f, 1, "Maximum extra load the drone is capable to carry.");
+		s = s || menu.addFloatOption("Max Velocity", &Settings::droneMaxVel, 10.0f, 200.0f, 1.0f, 0, "Maximum horizontal velocity the drone can achieve.\nImplicitly determines the drag coefficient.");
 		menu.addBoolOption("3D Flying", &Settings::drone3DFly, "Enables downward/reverse thrust.");
 		menu.addBoolOption("No Thrust Stick Down", &Settings::droneNoThrustDown, "No thrust stick position is stick down.");
 		//c = c || menu.addBoolOption("Acro Mode", &Settings::droneAcroMode, "Enables direct control mode especially for racing.");
@@ -294,7 +294,7 @@ void updateMenu()
 		menu.addTitle("Physics");
 
 		//Options
-		g = menu.addFloatOption("Gravity Scale", &Settings::physxGScale, 0.5f, 2.0f, 0.1f, "Simple gravity multiplier. For fast outdoor flying >1\nis probably more fun and for indoor flying <1 is\nprobably easier.");
+		g = menu.addFloatOption("Gravity Scale", &Settings::physxGScale, 0.5f, 2.0f, 0.1f, 1, "Simple gravity multiplier. For fast outdoor flying >1\nis probably more fun and for indoor flying <1 is\nprobably easier.");
 		c = menu.addBoolOption("Collision", &Settings::physxColl, "Toggle drone collision.");
 		//menu.addBoolOption("Use PID", &Settings::pidEnable, "The desired rotation of the drone is achieved by a PID\nController in real world. When disabled the rotation\ngets set, undermines physics.");
 
