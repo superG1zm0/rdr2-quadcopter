@@ -14,6 +14,7 @@
 
 #include "Graphics\CurvePlot.h"
 #include "Graphics\StickPlot.h"
+#include "Graphics\GamepadAxis.h"
 #include "nativesExtended.h"
 
 Menu menu;
@@ -27,6 +28,11 @@ LeFix::eEXIT currentExitCode = LeFix::exitNo;
 
 StickPlot stickPlot(&gamepad);
 CurvePlot curvePlot(&gamepad);
+GamepadAxis gamepadAxis(&gamepad);
+
+Any quadcopter_menu_prompt;
+
+char* stringsCam[] = { "Drone 1st Person", "Drone 3rd Person", "Drone Follow", "Player Dynamic" };
 
 void initialize()
 {
@@ -50,6 +56,12 @@ void initialize()
 
 	stickPlot.refreshData();
 	curvePlot.refreshData();
+
+	quadcopter_menu_prompt = UI_X::CREATE_PROMPT(
+		GAMEPLAY::CREATE_STRING(10, "LITERAL_STRING", "Start Quadcopter Flight"),
+		GAMEPLAY_X::JOAAT("INPUT_FRONTEND_ACCEPT"));
+	UI_X::_UIPROMPT_SET_ENABLED(quadcopter_menu_prompt, FALSE);
+	UI_X::_UIPROMPT_SET_VISIBLE(quadcopter_menu_prompt, FALSE);
 }
 
 void ScriptMain()
@@ -61,10 +73,20 @@ void ScriptMain()
 
 		if (isAbleToStartFlight() && drone == nullptr)	//Start Flight?
 		{
-			UI_X::DRAW_TEXT("Press \"Enter\" to start Quadcopter Flight", 0.052f + 0.15f, 0.076f, 255, 255, 255, 255, true, 0.5f);
-			GRAPHICS_X::DRAW_RECT(0.052f, 0.058f, 0.3f, 0.074f, 0, 0, 0, 190);
-			GRAPHICS_X::DRAW_SPRITE("generic_textures", "menu_header_1a", 0.052f, 0.058f, 0.3f, 0.074f, 0, 255, 255, 255, 255);
-			if (gamepad.button_accept) startFlight();
+			if (!UI_X::_UIPROMPT_IS_ENABLED(quadcopter_menu_prompt))
+			{
+				UI_X::_UIPROMPT_SET_ENABLED(quadcopter_menu_prompt, TRUE);
+				UI_X::_UIPROMPT_SET_VISIBLE(quadcopter_menu_prompt, TRUE);
+			}
+			if (CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_ACCEPT"))) startFlight();
+		}
+		else
+		{
+			if (UI_X::_UIPROMPT_IS_ENABLED(quadcopter_menu_prompt))
+			{
+				UI_X::_UIPROMPT_SET_ENABLED(quadcopter_menu_prompt, FALSE);
+				UI_X::_UIPROMPT_SET_VISIBLE(quadcopter_menu_prompt, FALSE);
+			}
 		}
 	}
 }
@@ -111,6 +133,11 @@ void update()
 			stickPlot.draw();
 		}
 
+		//Hide HUD and radar
+		if (Settings::hideHUD) {
+			UI::HIDE_HUD_AND_RADAR_THIS_FRAME();
+		}
+
 		//Toggle Cameramode
 		if (gamepad.button_cam)
 		{
@@ -118,6 +145,7 @@ void update()
 			if (Settings::camMode > LeFix::camModeC1) Settings::camMode = 0;
 			drone->applyCam();
 			clone->refreshCamMode();
+			UILOG_X::PRINT_SUBTITLE(stringsCam[Settings::camMode]);
 		}
 		//CAM::SET_CAM_AFFECTS_AIMING() //TOMTOM
 
@@ -159,13 +187,11 @@ void updateFlight()
 	//Update Ped (load world)
 	ENTITY_X::SET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), drone->getPosition());
 	ENTITY::SET_ENTITY_VISIBLE(PLAYER::PLAYER_PED_ID(), FALSE);
-	WEAPON::SET_CURRENT_PED_WEAPON(PLAYER::PLAYER_PED_ID(), 0xA2719263, TRUE, FALSE, FALSE, FALSE); //unarmed
+	WEAPON::SET_CURRENT_PED_WEAPON(PLAYER::PLAYER_PED_ID(), GAMEPLAY_X::JOAAT("weapon_unarmed"), TRUE, FALSE, FALSE, FALSE); //unarmed
 }
 
 void updateMenu()
 {
-	char* stringsCam[] = { "Drone 1st Person", "Drone 3rd Person", "Drone Follow", "Player Dynamic" };
-
 	//Apply bools
 	bool d, c, b, m, s, g, v;
 
@@ -174,7 +200,7 @@ void updateMenu()
 	{
 	case Main_Menu:
 		menu.addTitle("Quadcopter");
-		menu.addHeader("v1.0");
+		menu.addHeader("v1.1");
 		menu.addFloatOption("Volume", &Settings::audioVolume, 0.0f, 1.0f, 0.1f, 1, "Global volume for all mod-related sounds.");
 		menu.addSubmenuOption("Camera", cameramenu, "Settings for all camera modes.");
 		menu.addSubmenuOption("Control", controlmenu, "Settings for conversion of gamepad output to drone\ninput.");
@@ -286,8 +312,52 @@ void updateMenu()
 		menu.addTitle("Gamepad");
 
 		//Options
-		menu.addBoolOption("Vibration", &Settings::gamepadVib, "Toggle gamepad vibration.\n(Heavy collisions)");
-		menu.addBoolOption("Using inverted cam [RDR2]", &Settings::gamepadInvPitch, "Enabling inverted camera in the RDR2 options will\ninvert the pitch input, this setting will invert it again.");
+		if (menu.addBoolOption("DirectInput", &Settings::gamepadDirectInput, "Enables DirectInput."))
+		{
+			if (Settings::gamepadDirectInput)
+				gamepad.InitDirectInput(GetForegroundWindow());
+			else
+				gamepad.ReleaseDirectInput();
+		}
+
+		if (Settings::gamepadDirectInput)
+		{
+			menu.addHeader(gamepad.name);
+			menu.addIntOption("Roll", &Settings::gamepadRollAxis, 1, 6);
+			menu.addIntOption("Pitch", &Settings::gamepadPitchAxis, 1, 6);
+			menu.addIntOption("Yaw", &Settings::gamepadYawAxis, 1, 6);
+			menu.addIntOption("Throttle", &Settings::gamepadThrottleAxis, 1, 6);
+
+			menu.addBoolOption("Inverted Roll", &Settings::gamepadInvRoll);
+			menu.addBoolOption("Inverted Pitch", &Settings::gamepadInvPitch);
+			menu.addBoolOption("Inverted Yaw", &Settings::gamepadInvYaw);
+			menu.addBoolOption("Inverted Throttle", &Settings::gamepadInvThrottle);
+
+			menu.addIntOption("Roll Deadband", &Settings::gamepadRollDeadband, 0, 1000);
+			menu.addIntOption("Roll Center", &Settings::gamepadRollCenter, -1000, 1000);
+			menu.addFloatOption("Roll Sensitivity", &Settings::gamepadRollSensitivity, 1.0f, 2.0f, 0.01f, 2);
+
+			menu.addIntOption("Pitch Deadband", &Settings::gamepadPitchDeadband, 0, 1000);
+			menu.addIntOption("Pitch Center", &Settings::gamepadPitchCenter, -1000, 1000);
+			menu.addFloatOption("Pitch Sensitivity", &Settings::gamepadPitchSensitivity, 1.0f, 2.0f, 0.01f, 2);
+
+			menu.addIntOption("Yaw Deadband", &Settings::gamepadYawDeadband, 0, 1000);
+			menu.addIntOption("Yaw Center", &Settings::gamepadYawCenter, -1000, 1000);
+			menu.addFloatOption("Yaw Sensitivity", &Settings::gamepadYawSensitivity, 1.0f, 2.0f, 0.01f, 2);
+
+			menu.addIntOption("Throttle Center", &Settings::gamepadThrottleCenter, -1000, 1000);
+			menu.addFloatOption("Throttle Sensitivity", &Settings::gamepadThrottleSensitivity, 1.0f, 2.0f, 0.01f, 2);
+
+			menu.addIntOption("Unstuck", &Settings::gamepadUnstuckButton, 0, 32);
+			menu.addIntOption("Flip", &Settings::gamepadFlipButton, 0, 32);
+			menu.addIntOption("Cam", &Settings::gamepadCamButton, 0, 32);
+			gamepadAxis.draw();
+		}
+		else
+		{
+			menu.addBoolOption("Vibration", &Settings::gamepadVib, "Toggle gamepad vibration.\n(Heavy collisions)");
+			menu.addBoolOption("Using inverted cam [RDR2]", &Settings::gamepadInvPitch, "Enabling inverted camera in the RDR2 options will\ninvert the pitch input, this setting will invert it again.");
+		}
 		break;
 	case physxmenu:
 		//Title
@@ -311,6 +381,7 @@ void updateMenu()
 		v = false;
 
 		//Options
+		menu.addBoolOption("Hide HUD", &Settings::hideHUD, "Hide HUD and mini map.");
 		menu.addBoolOption("Sticks", &Settings::showStickCam, "Prints the stick position on the bottom of the screen.\nIntended for screen capture.");
 		//v = v || menu.addBoolOption("Trails", &Settings::showTrails, "Adds some particle effects at the prop positions.");
 		v = v || menu.addBoolOption("Collision Box Visible", &Settings::showCollider, "Visibility of the collision box model, which is does all\nthe physics.");
@@ -354,15 +425,18 @@ void startFlight()
 	//Fade out
 	CAM::DO_SCREEN_FADE_OUT(400);
 	WAIT_LONG(500);
+	if (Settings::gamepadDirectInput)
+		gamepad.InitDirectInput(GetForegroundWindow());
 
 	//Get reference
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 
 	//Change PlayerPed
 	ENTITY::SET_ENTITY_COLLISION(playerPed, FALSE, FALSE);
-	//NOT WORK
-	//RADAR::SET_BLIP_DISPLAY(RADAR::GET_MAIN_PLAYER_BLIP_ID(), 3);
 
+	RADAR::SET_BLIP_SPRITE(RADAR::GET_MAIN_PLAYER_BLIP_ID(), 4109568128, TRUE);
+	RADAR::SET_BLIP_NAME_FROM_TEXT_FILE(RADAR::GET_MAIN_PLAYER_BLIP_ID(), "BLIP_PLAYER");
+	
 	//Clone PlayerPed
 	clone = new Clone(playerPed);
 
@@ -425,8 +499,9 @@ void endFlight(bool goBack)
 	//Change PlayerPed
 	ENTITY::SET_ENTITY_COLLISION(playerPed, TRUE, FALSE);
 	ENTITY::SET_ENTITY_VISIBLE(playerPed, TRUE);
-	//NOT WORK
-	//HUD::SET_BLIP_DISPLAY(HUD::GET_MAIN_PLAYER_BLIP_ID(), 2);
+
+	RADAR::SET_BLIP_SPRITE(RADAR::GET_MAIN_PLAYER_BLIP_ID(), 3536528039, TRUE);
+	RADAR::SET_BLIP_NAME_FROM_TEXT_FILE(RADAR::GET_MAIN_PLAYER_BLIP_ID(), "BLIP_PLAYER");
 
 	//Additional
 	RADAR::UNLOCK_MINIMAP_ANGLE();
@@ -436,8 +511,10 @@ void endFlight(bool goBack)
 	delete drone;
 	drone = nullptr;
 
+	gamepad.ReleaseDirectInput();
+
 	//Wait for loading world
-	DWORD waitTime = 500 + DWORD(distance);
+	ULONGLONG waitTime = 500 + ULONGLONG(distance);
 	WAIT_LONG(waitTime);
 	
 	//Fade in
@@ -458,8 +535,9 @@ void endFlightQuick()
 	//Change PlayerPed
 	ENTITY::SET_ENTITY_COLLISION(playerPed, TRUE, FALSE);
 	ENTITY::SET_ENTITY_VISIBLE(playerPed, TRUE);
-	//NOT WORK
-	//HUD::SET_BLIP_DISPLAY(HUD::GET_MAIN_PLAYER_BLIP_ID(), 2);
+
+	RADAR::SET_BLIP_SPRITE(RADAR::GET_MAIN_PLAYER_BLIP_ID(), 3536528039, TRUE);
+	RADAR::SET_BLIP_NAME_FROM_TEXT_FILE(RADAR::GET_MAIN_PLAYER_BLIP_ID(), "BLIP_PLAYER");
 
 	//Additional
 	RADAR::UNLOCK_MINIMAP_ANGLE();
@@ -469,22 +547,23 @@ void endFlightQuick()
 	delete drone;
 	drone = nullptr;
 
+	gamepad.ReleaseDirectInput();
+
 	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE, 0);
 }
 
 void disableFlightButtons()
 {
-	//NOT WORK
-	CONTROLS::DISABLE_CONTROL_ACTION(0, GAMEPLAY_X::JOAAT("INPUT_SELECT_WEAPON"), TRUE);
+	CONTROLS::DISABLE_CONTROL_ACTION(0, GAMEPLAY_X::JOAAT("INPUT_OPEN_WHEEL_MENU"), TRUE);
 }
 
-void WAIT_LONG(DWORD waitTime)
+void WAIT_LONG(ULONGLONG waitTime)
 {
-	static DWORD maxTickCount;
-	maxTickCount = GetTickCount() + waitTime;
+	static ULONGLONG maxTickCount;
+	maxTickCount = GetTickCount64() + waitTime;
 	do {
 		WAIT(0);
 		update();
-	} while (GetTickCount() < maxTickCount);
+	} while (GetTickCount64() < maxTickCount);
 }
 

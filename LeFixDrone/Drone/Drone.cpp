@@ -107,8 +107,8 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 	Hash colliderHash = GAMEPLAY_X::JOAAT("p_cs_suitcase02x");
 
 	//Load Collision Box
-	DWORD timeout = GetTickCount() + 5000;
-	while (!(STREAMING::HAS_MODEL_LOADED(colliderHash)) && timeout > GetTickCount())
+	ULONGLONG timeout = GetTickCount64() + 5000;
+	while (!(STREAMING::HAS_MODEL_LOADED(colliderHash)) && timeout > GetTickCount64())
 	{
 		STREAMING::REQUEST_MODEL(colliderHash, FALSE);
 		//STREAMING::REQUEST_COLLISION_FOR_MODEL(colliderHash);
@@ -157,12 +157,6 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 		ENTITY::ATTACH_ENTITY_TO_ENTITY(modelPlate[n], modelCase, 0, pos.x(), pos.y(), pos.z() + 0.08f, 0.0f, 0.0f, 180.0f, FALSE, TRUE, FALSE, FALSE, 0, TRUE, FALSE, FALSE);
 	}
 
-	//Blip
-	//NOT WORK
-	/*blip = RADAR::ADD_BLIP_FOR_ENTITY(collider);
-	RADAR::SET_BLIP_SPRITE(blip, 8, FALSE); // 4 dot
-	RADAR::SET_BLIP_ROTATION(blip, 45);*/
-
 	//Cameras
 	cam1 = CAM::CREATE_CAM("DEFAULT_SCRIPTED_CAMERA", true);
 	cam3 = CAM::CREATE_CAM("DEFAULT_SCRIPTED_CAMERA", true);
@@ -193,7 +187,6 @@ Drone::Drone(Vector3f pos, Vector3f vel, Quaternionf rot)
 Drone::~Drone()
 {
 	delete controller;
-	//RADAR::REMOVE_BLIP(&blip);
 	audio.stopSources();
 	CAM::RENDER_SCRIPT_CAMS(0, 0, 3000, FALSE, FALSE, 0);
 	CAM::DESTROY_CAM(cam1, true);
@@ -314,8 +307,8 @@ void Drone::setTrails(bool doEnable)
 		char effect[] = "scr_tennis_ball_trail";
 
 		//Load PTFX
-		DWORD timeout = GetTickCount() + 3000;
-		while (!STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset) && timeout > GetTickCount())
+		ULONGLONG timeout = GetTickCount64() + 3000;
+		while (!STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset) && timeout > GetTickCount64())
 		{
 			STREAMING::REQUEST_NAMED_PTFX_ASSET(asset);
 			WAIT(0);
@@ -331,12 +324,12 @@ void Drone::setTrails(bool doEnable)
 			}
 
 			//Wait for ptfx pulse
-			timeout = GetTickCount() + 500;
-			while (timeout > GetTickCount()) WAIT(0);
+			timeout = GetTickCount64() + 500;
+			while (timeout > GetTickCount64()) WAIT(0);
 
 			//Load PTFX (again?)
-			timeout = GetTickCount() + 100;
-			while (!STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset) && timeout > GetTickCount())
+			timeout = GetTickCount64() + 100;
+			while (!STREAMING::HAS_NAMED_PTFX_ASSET_LOADED(asset) && timeout > GetTickCount64())
 			{
 				STREAMING::REQUEST_NAMED_PTFX_ASSET(asset);
 				WAIT(0);
@@ -478,7 +471,6 @@ void Drone::updateMinimap()
 		//use drone (don't rotate minimap just set blip)
 		heading = (int)getHeading(currentState.rot._transformVector(Vector3f(0.0f, 1.0f, 0.0f)));
 	}
-	RADAR::SET_BLIP_ROTATION(blip, heading + 45);
 	
 }
 

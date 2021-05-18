@@ -305,3 +305,34 @@ void UI_X::SET_TEXT_DROPSHADOW(int distance, ColorRGBA col)
 {
 	UI::SET_TEXT_DROPSHADOW(distance, col.r, col.g, col.b, col.a);
 }
+
+Blip UI_X::_BLIP_ADD_FOR_ENTITY(Hash blipHash, Entity entity)
+{
+	return RADAR::_0x23F74C2FDA6E7C61(blipHash, entity);
+}
+
+Prompt UI_X::CREATE_PROMPT(const char* text, Hash control)
+{
+	Prompt prompt = UI::_0x04F97DE45A519419();
+	UI::_0xF4A5C4509BF923B1(prompt, 0);
+	UI::_0x5DD02A8318420DD7(prompt, (Any*) text);
+	UI::_0xB5352B7494A08258(prompt, control);
+	UI::_0xF7AA2696A22AD8B9(prompt);
+
+	return prompt;
+}
+
+void UI_X::_UIPROMPT_SET_ENABLED(Prompt prompt, BOOL toggle)
+{
+	UI::_0x8A0FB4D03A630D21(prompt, toggle);
+}
+
+void UI_X::_UIPROMPT_SET_VISIBLE(Prompt prompt, BOOL toggle)
+{
+	UI::_0x71215ACCFDE075EE(prompt, toggle);
+}
+
+BOOL UI_X::_UIPROMPT_IS_ENABLED(Prompt prompt)
+{
+	return UI::_0x0D00EDDFB58B7F28(prompt);
+}

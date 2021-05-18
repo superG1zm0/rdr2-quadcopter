@@ -13,13 +13,41 @@ bool Settings::showCollider = false;
 bool Settings::showModel = true;
 bool Settings::showTrails = false;
 bool Settings::showStickCam = true;
+bool Settings::hideHUD = false;
 
 //GAMEPAD  
 bool Settings::gamepadVib = true;
+bool Settings::gamepadDirectInput = false;
+
+int Settings::gamepadRollAxis = 2;
+int Settings::gamepadPitchAxis = 3;
+int Settings::gamepadYawAxis = 4;
+int Settings::gamepadThrottleAxis = 1;
+
+bool Settings::gamepadInvRoll = false;
 bool Settings::gamepadInvPitch = false;
+bool Settings::gamepadInvYaw = false;
+bool Settings::gamepadInvThrottle = false;
+
+int Settings::gamepadRollDeadband = 0;
+int Settings::gamepadPitchDeadband = 0;
+int Settings::gamepadYawDeadband = 0;
+
+int Settings::gamepadRollCenter = 0;
+int Settings::gamepadPitchCenter = 0;
+int Settings::gamepadYawCenter = 0;
+int Settings::gamepadThrottleCenter = 0;
+
+float Settings::gamepadRollSensitivity = 1.0f;
+float Settings::gamepadPitchSensitivity = 1.0f;
+float Settings::gamepadYawSensitivity = 1.0f;
+float Settings::gamepadThrottleSensitivity = 1.0f;
+
+int Settings::gamepadUnstuckButton = 0;
+int Settings::gamepadFlipButton = 0;
+int Settings::gamepadCamButton = 0;
 
 //CAMERA
-
 int Settings::camMode = 0;
 int Settings::camDrone1FOV = 90;
 int Settings::camDrone3FOV = 90;
@@ -99,7 +127,35 @@ void Settings::Save() {
 
 	//GAMEPAD
 	settings.SetBoolValue("GAMEPAD", "vibration", gamepadVib);
-	settings.SetBoolValue("GAMEPAD", "invertedCam", gamepadInvPitch);
+	settings.SetBoolValue("GAMEPAD", "DirectInput", gamepadDirectInput);
+
+	settings.SetLongValue("GAMEPAD", "RollAxis", gamepadRollAxis);
+	settings.SetLongValue("GAMEPAD", "PitchAxis", gamepadPitchAxis);
+	settings.SetLongValue("GAMEPAD", "YawAxis", gamepadYawAxis);
+	settings.SetLongValue("GAMEPAD", "ThrottleAxis", gamepadThrottleAxis);
+
+	settings.SetBoolValue("GAMEPAD", "invertedRoll", gamepadInvRoll);
+	settings.SetBoolValue("GAMEPAD", "invertedPitch", gamepadInvPitch);
+	settings.SetBoolValue("GAMEPAD", "invertedYaw", gamepadInvYaw);
+	settings.SetBoolValue("GAMEPAD", "invertedThrottle", gamepadInvThrottle);
+
+	settings.SetLongValue("GAMEPAD", "RollDeadband", gamepadRollDeadband);
+	settings.SetLongValue("GAMEPAD", "PitchDeadband", gamepadPitchDeadband);
+	settings.SetLongValue("GAMEPAD", "YawDeadband", gamepadYawDeadband);
+
+	settings.SetLongValue("GAMEPAD", "RollCenter", gamepadRollCenter);
+	settings.SetLongValue("GAMEPAD", "PitchCenter", gamepadPitchCenter);
+	settings.SetLongValue("GAMEPAD", "YawCenter", gamepadYawCenter);
+	settings.SetLongValue("GAMEPAD", "ThrottleCenter", gamepadThrottleCenter);
+
+	settings.SetDoubleValue("GAMEPAD", "RollSensitivity", gamepadRollSensitivity);
+	settings.SetDoubleValue("GAMEPAD", "PitchSensitivity", gamepadPitchSensitivity);
+	settings.SetDoubleValue("GAMEPAD", "YawSensitivity", gamepadYawSensitivity);
+	settings.SetDoubleValue("GAMEPAD", "ThrottleSensitivity", gamepadThrottleSensitivity);
+
+	settings.SetLongValue("GAMEPAD", "UnstuckButton", gamepadUnstuckButton);
+	settings.SetLongValue("GAMEPAD", "FlipButton", gamepadFlipButton);
+	settings.SetLongValue("GAMEPAD", "CamButton", gamepadCamButton);
 
 	//PID
 	settings.SetBoolValue("PID", "enable", pidEnable);
@@ -113,6 +169,7 @@ void Settings::Save() {
 
 	//VISUAL
 	settings.SetBoolValue("VISUAL", "trails", showTrails);
+	settings.SetBoolValue("VISUAL", "hud", hideHUD);
 	settings.SetBoolValue("VISUAL", "sticks", showStickCam);
 	settings.SetBoolValue("VISUAL", "model", showModel);
 	settings.SetBoolValue("VISUAL", "colli", showCollider);
@@ -161,7 +218,35 @@ void Settings::Load() {
 
 	//GAMEPAD
 	gamepadVib = settings.GetBoolValue("GAMEPAD", "vibration", true);
-	gamepadInvPitch = settings.GetBoolValue("GAMEPAD", "invertedCam", false);
+	gamepadDirectInput = settings.GetBoolValue("GAMEPAD", "DirectInput", false);
+
+	gamepadRollAxis = settings.GetLongValue("GAMEPAD", "RollAxis", 2);
+	gamepadPitchAxis = settings.GetLongValue("GAMEPAD", "PitchAxis", 3);
+	gamepadYawAxis = settings.GetLongValue("GAMEPAD", "YawAxis", 4);
+	gamepadThrottleAxis = settings.GetLongValue("GAMEPAD", "ThrottleAxis", 1);
+
+	gamepadInvRoll = settings.GetBoolValue("GAMEPAD", "invertedRoll", false);
+	gamepadInvPitch = settings.GetBoolValue("GAMEPAD", "invertedPitch", false);
+	gamepadInvYaw = settings.GetBoolValue("GAMEPAD", "invertedYaw", false);
+	gamepadInvThrottle = settings.GetBoolValue("GAMEPAD", "invertedThrottle", false);
+
+	gamepadRollDeadband = settings.GetLongValue("GAMEPAD", "RollDeadband", 0);
+	gamepadPitchDeadband = settings.GetLongValue("GAMEPAD", "PitchDeadband", 0);
+	gamepadYawDeadband = settings.GetLongValue("GAMEPAD", "YawDeadband", 0);
+
+	gamepadRollCenter = settings.GetLongValue("GAMEPAD", "RollCenter", 0);
+	gamepadPitchCenter = settings.GetLongValue("GAMEPAD", "PitchCenter", 0);
+	gamepadYawCenter = settings.GetLongValue("GAMEPAD", "YawCenter", 0);
+	gamepadThrottleCenter = settings.GetLongValue("GAMEPAD", "ThrottleCenter", 0);
+
+	gamepadRollSensitivity = settings.GetDoubleValue("GAMEPAD", "RollSensitivity", 1.0f);
+	gamepadPitchSensitivity = settings.GetDoubleValue("GAMEPAD", "PitchSensitivity", 1.0f);
+	gamepadYawSensitivity = settings.GetDoubleValue("GAMEPAD", "YawSensitivity", 1.0f);
+	gamepadThrottleSensitivity = settings.GetDoubleValue("GAMEPAD", "ThrottleSensitivity", 1.0f);
+
+	gamepadUnstuckButton = settings.GetLongValue("GAMEPAD", "UnstuckButton", 0);
+	gamepadFlipButton = settings.GetLongValue("GAMEPAD", "FlipButton", 0);
+	gamepadCamButton = settings.GetLongValue("GAMEPAD", "CamButton", 0);
 
 	//PID
 	pidEnable = settings.GetBoolValue("PID", "enable", false);
@@ -175,6 +260,7 @@ void Settings::Load() {
 
 	//VISUAL
 	showTrails = settings.GetBoolValue("VISUAL", "trails", false);
+	hideHUD = settings.GetBoolValue("VISUAL", "hud", false);
 	showStickCam = settings.GetBoolValue("VISUAL", "sticks", true);
 	showModel = settings.GetBoolValue("VISUAL", "model", true);
 	showCollider = settings.GetBoolValue("VISUAL", "colli", false);

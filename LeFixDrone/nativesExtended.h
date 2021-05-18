@@ -12,6 +12,8 @@
 
 #include "Graphics\ColorRGBA.h"
 
+typedef int Prompt;
+
 std::string toString(const Eigen::Vector3f &v);
 std::string toString(const Eigen::Quaternionf &q);
 
@@ -72,4 +74,11 @@ namespace UI_X
 	void DRAW_TEXT(const char* text, float x, float y, int r, int g, int b, int a, bool centered = false, float size = 0.342f);
 	void SET_TEXT_COLOUR(ColorRGBA col);
 	void SET_TEXT_DROPSHADOW(int distance, ColorRGBA col);
+
+	Blip _BLIP_ADD_FOR_ENTITY(Hash blipHash, Entity entity);
+
+	Prompt CREATE_PROMPT(const char* text, Hash control);
+	void _UIPROMPT_SET_ENABLED(Prompt prompt, BOOL toggle);
+	void _UIPROMPT_SET_VISIBLE(Prompt prompt, BOOL toggle);
+	BOOL _UIPROMPT_IS_ENABLED(Prompt prompt);
 }

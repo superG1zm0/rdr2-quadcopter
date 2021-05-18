@@ -17,7 +17,7 @@ private:
 	static bool isFadingOut;
 	static bool isFadingIn;
 	static float strength;
-	static DWORD lastUpdate;
+	static ULONGLONG lastUpdate;
 	static float duration;
 };
 

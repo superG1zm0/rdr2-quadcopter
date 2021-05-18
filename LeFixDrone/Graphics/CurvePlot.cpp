@@ -49,7 +49,7 @@ void CurvePlot::draw()
 	static ColorRGBA colBrd = ColorRGBA(0, 0, 0, 120);
 
 	static float sizeDot = 0.004f;//Size of Dots
-	static float sizeRct = 0.7f;  //Size of Graph Retangle
+	static float sizeRct = 0.6f;  //Size of Graph Retangle
 	static float sizeBrd = 0.01f; //Border Thickness
 
 	static float posX = 0.5f; //X Position of Center

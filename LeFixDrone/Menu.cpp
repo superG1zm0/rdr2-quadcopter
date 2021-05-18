@@ -308,7 +308,7 @@ void Menu::ButtonMonitoring()
 			optionPress = true;
 		}
 
-		if (CONTROLS::IS_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_CANCEL"))) //Backspace
+		else if (CONTROLS::IS_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_CANCEL"))) //Backspace
 		{
 			if (submenu == Main_Menu) {
 				CloseMenu();
@@ -323,8 +323,10 @@ void Menu::ButtonMonitoring()
 			}
 		}
 
-		if (CONTROLS::IS_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_UP"))) //Scroll Up
+		else if (CONTROLS::IS_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_UP"))) //Scroll Up
 		{
+			delay = GetTickCount64() + 500;
+
 			if (currentOption == 1)
 			{
 				currentOption = optionCount;
@@ -344,8 +346,10 @@ void Menu::ButtonMonitoring()
 			}
 		}
 
-		if (CONTROLS::IS_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_DOWN"))) //Scroll Down
+		else if (CONTROLS::IS_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_DOWN"))) //Scroll Down
 		{
+			delay = GetTickCount64() + 500;
+
 			if (currentOption == optionCount)
 			{
 				currentOption = 1;
@@ -361,29 +365,93 @@ void Menu::ButtonMonitoring()
 				}
 			}
 		}
-
-		if (CONTROLS::IS_DISABLED_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_LEFT"))) //Scroll Left
+		else if (CONTROLS::IS_DISABLED_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_UP")))
+		{
+			if (GetTickCount64() > delay)
+			{
+				delay = GetTickCount64() + 50;
+				if (currentOption == 1)
+				{
+					currentOption = optionCount;
+					currentMenuMaxOptions = optionCount;
+					if (optionCount > maxOptions)
+						currentMenuMinOptions = optionCount - maxOptions + 1;
+					else
+						currentMenuMinOptions = 1;
+				}
+				else
+				{
+					currentOption--;
+					if (currentOption < currentMenuMinOptions) {
+						currentMenuMinOptions = currentOption;
+						currentMenuMaxOptions = currentOption + maxOptions - 1;
+					}
+				}
+			}
+		}
+		else if (CONTROLS::IS_DISABLED_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_DOWN")))
+		{
+			if (GetTickCount64() > delay)
+			{
+				delay = GetTickCount64() + 50;
+				if (currentOption == optionCount)
+				{
+					currentOption = 1;
+					currentMenuMinOptions = 1;
+					currentMenuMaxOptions = maxOptions;
+				}
+				else
+				{
+					currentOption++;
+					if (currentOption > currentMenuMaxOptions) {
+						currentMenuMaxOptions = currentOption;
+						currentMenuMinOptions = currentOption - maxOptions + 1;
+					}
+				}
+			}
+		}
+		else if (CONTROLS::IS_DISABLED_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_LEFT"))) //Scroll Left
 		{
 			delay = GetTickCount64() + 500;
+			longPress = 0;
 			leftPress = true;
 		}
-		if (CONTROLS::IS_DISABLED_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT"))) //Scroll Right
+		else if (CONTROLS::IS_DISABLED_CONTROL_JUST_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT"))) //Scroll Right
 		{
 			delay = GetTickCount64() + 500;
+			longPress = 0;
 			rightPress = true;
 		}
 
-		if (CONTROLS::IS_DISABLED_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_LEFT"))) { 
+		else if (CONTROLS::IS_DISABLED_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_LEFT")))
+		{ 
 			if (GetTickCount64() > delay)
 			{
-				delay = GetTickCount64() + 50;
+				if (longPress < 20)
+				{
+					delay = GetTickCount64() + 50;
+					longPress++;
+				}
+				else
+				{
+					delay = GetTickCount64() + 5;
+				}
 				leftPress = true;
 			}
 		}
-		if (CONTROLS::IS_DISABLED_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT"))) {
+		else if (CONTROLS::IS_DISABLED_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT")))
+		{
 			if (GetTickCount64() > delay)
 			{
-				delay = GetTickCount64() + 50;
+				if (longPress < 20)
+				{
+					delay = GetTickCount64() + 50;
+					longPress++;
+				}
+				else
+				{
+					delay = GetTickCount64() + 5;
+				}
 				rightPress = true;
 			}
 		}

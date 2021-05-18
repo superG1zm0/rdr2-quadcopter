@@ -1,141 +1,256 @@
 #include "Gamepad.h"
 
-void Gamepad::refresh()
+Gamepad::Gamepad()
 {
-	button_unstuck	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_Y"));
-	button_flip		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_X"));
-
-	button_cam		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, 0);
-
-	button_accept	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_ACCEPT"));
-	button_cancel	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_CANCEL"));
-
-	button_up		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_UP"));
-	button_down		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_DOWN"));
-	button_right	= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT"));
-	button_left		= TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_LEFT"));
-
-	stick_left_x	= CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_AXIS_X"));
-	stick_left_y	= -CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_AXIS_Y"));
-	stick_right_x	= CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT_AXIS_X"));
-	stick_right_y	= -CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT_AXIS_Y"));
-
-	if (Settings::gamepadInvPitch) stick_right_y *= -1.0f;
+    g_pDI = nullptr;
+    g_pJoystick = nullptr;
+    *name = '\0';
 }
 
+void Gamepad::refresh()
+{
+	if (Settings::gamepadDirectInput)
+	{
+        UpdateInputState();
+	}
+	else
+	{
+		button_unstuck = TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_Y"));
+		button_flip = TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_X"));
 
-//float Gamepad::deadzoneX;
-//float Gamepad::deadzoneY;
-//
-//int Gamepad::GetPort()
-//{
-//	return cId + 1;
-//}
-//
-//XINPUT_GAMEPAD *Gamepad::GetState()
-//{
-//	return &state.Gamepad;
-//}
-//
-//bool Gamepad::CheckConnection()
-//{
-//	int controllerId = -1;
-//
-//	for (DWORD i = 0; i < XUSER_MAX_COUNT && controllerId == -1; i++)
-//	{
-//		XINPUT_STATE state;
-//		ZeroMemory(&state, sizeof(XINPUT_STATE));
-//
-//		if (XInputGetState(i, &state) == ERROR_SUCCESS)
-//			controllerId = i;
-//	}
-//
-//	cId = controllerId;
-//
-//	return controllerId != -1;
-//}
-//
-//// Returns false if the controller has been disconnected
-//bool Gamepad::Refresh()
-//{
-//	if (cId == -1)
-//		CheckConnection();
-//
-//	if (cId != -1)
-//	{
-//		ZeroMemory(&state, sizeof(XINPUT_STATE));
-//		if (XInputGetState(cId, &state) != ERROR_SUCCESS)
-//		{
-//			cId = -1;
-//			return false;
-//		}
-//
-//		float normLX = fmaxf(-1, (float)state.Gamepad.sThumbLX / 32767);
-//		float normLY = fmaxf(-1, (float)state.Gamepad.sThumbLY / 32767);
-//
-//		leftStickX = (abs(normLX) < deadzoneX ? 0 : (abs(normLX) - deadzoneX) * (normLX / abs(normLX)));
-//		leftStickY = (abs(normLY) < deadzoneY ? 0 : (abs(normLY) - deadzoneY) * (normLY / abs(normLY)));
-//
-//		if (deadzoneX > 0) leftStickX *= 1 / (1 - deadzoneX);
-//		if (deadzoneY > 0) leftStickY *= 1 / (1 - deadzoneY);
-//
-//		float normRX = fmaxf(-1, (float)state.Gamepad.sThumbRX / 32767);
-//		float normRY = fmaxf(-1, (float)state.Gamepad.sThumbRY / 32767);
-//
-//		rightStickX = (abs(normRX) < deadzoneX ? 0 : (abs(normRX) - deadzoneX) * (normRX / abs(normRX)));
-//		rightStickY = (abs(normRY) < deadzoneY ? 0 : (abs(normRY) - deadzoneY) * (normRY / abs(normRY)));
-//
-//		if (deadzoneX > 0) rightStickX *= 1 / (1 - deadzoneX);
-//		if (deadzoneY > 0) rightStickY *= 1 / (1 - deadzoneY);
-//
-//		leftTrigger = (float)state.Gamepad.bLeftTrigger / 255;
-//		rightTrigger = (float)state.Gamepad.bRightTrigger / 255;
-//
-//		if (isVibrating)
-//		{
-//			if (GetTickCount() > vibrateStopTime)
-//			{
-//				vibrate(0, 0);
-//				isVibrating = false;
-//			}
-//		}
-//		return true;
-//	}
-//	return false;
-//}
-//
-//bool Gamepad::IsPressed(WORD button)
-//{
-//	return (state.Gamepad.wButtons & button) != 0;
-//}
-//
-//void Gamepad::setDeadzone(float dzX, float dzY)
-//{
-//	deadzoneX = dzX;
-//	deadzoneY = dzY;
-//}
-//
-//void Gamepad::initiateVibration(float intensity, DWORD duration)
-//{
-//	int val = (int)(intensity * 65535);
-//
-//	isVibrating = true;
-//	vibrateStopTime = GetTickCount() + duration;
-//	vibrate(val, val);
-//}
-//
-//void Gamepad::vibrate(int leftVal, int rightVal)
-//{
-//	// Create a Vibraton State
-//	XINPUT_VIBRATION Vibration;
-//
-//	// Zeroise the Vibration
-//	ZeroMemory(&Vibration, sizeof(XINPUT_VIBRATION));
-//
-//	// Set the Vibration Values
-//	Vibration.wLeftMotorSpeed = leftVal;
-//	Vibration.wRightMotorSpeed = rightVal;
-//
-//	// Vibrate the controller
-//	XInputSetState(cId, &Vibration);
-//}
+		button_cam = TRUE == CONTROLS::IS_CONTROL_PRESSED(0, GAMEPLAY_X::JOAAT("INPUT_NEXT_CAMERA"));
+
+		stick_left_x = CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_AXIS_X"));
+		stick_left_y = -CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_AXIS_Y"));
+		stick_right_x = CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT_AXIS_X"));
+		stick_right_y = -CONTROLS::GET_CONTROL_NORMAL(0, GAMEPLAY_X::JOAAT("INPUT_FRONTEND_RIGHT_AXIS_Y"));
+
+        stick_right_y = Settings::gamepadInvPitch ? -stick_right_y : stick_right_y;
+	}
+}
+
+HRESULT Gamepad::InitDirectInput(HWND hWnd)
+{
+    HRESULT hr;
+
+    *name = '\0';
+
+    button_unstuck = false;
+    button_flip = false;
+    button_cam = false;
+
+    raw_button[0] = false;
+    raw_button[1] = false;
+    raw_button[2] = false;
+
+    stick_left_x = 0.0f;
+    stick_left_y = -1.0f;
+    stick_right_x = 0.0f;
+    stick_right_y = 0.0f;
+    
+    raw_stick[0] = 0.0f;
+    raw_stick[1] = 0.0f;
+    raw_stick[2] = 0.0f;
+    raw_stick[3] = -1.0f;
+
+
+    // Register with the DirectInput subsystem and get a pointer
+    // to a IDirectInput interface we can use.
+    // Create a DInput object
+    if (FAILED(hr = DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
+        IID_IDirectInput8, (VOID**)&g_pDI, nullptr)))
+        return hr;
+
+    // Look for a joystick we can use.
+    if (FAILED(hr = g_pDI->EnumDevices(DI8DEVCLASS_GAMECTRL,
+        EnumJoysticksCallback,
+        this, DIEDFL_ATTACHEDONLY)))
+        return hr;
+
+    // Make sure we got a joystick
+    if (!g_pJoystick)
+    {
+        return S_OK;
+    }
+
+    if (FAILED(hr = g_pJoystick->SetDataFormat(&c_dfDIJoystick)))
+        return hr;
+
+    // Set the cooperative level to let DInput know how this device should
+    // interact with the system and with other DInput applications.
+    if (FAILED(hr = g_pJoystick->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE |
+        DISCL_BACKGROUND)))
+        return hr;
+
+    // Enumerate the joystick objects. The callback function enabled user
+    // interface elements for objects that are found, and sets the min/max
+    // values property for discovered axes.
+    if (FAILED(hr = g_pJoystick->EnumObjects(EnumObjectsCallback,
+        this, DIDFT_ALL)))
+        return hr;
+
+    return S_OK;
+}
+
+BOOL CALLBACK Gamepad::EnumJoysticksCallback(const DIDEVICEINSTANCE* pdidInstance,
+    VOID* pContext)
+{
+    HRESULT hr;
+
+    Gamepad* gamepad = reinterpret_cast<Gamepad*>(pContext);
+
+    // Obtain an interface to the enumerated joystick.
+    hr = gamepad->g_pDI->CreateDevice(pdidInstance->guidInstance, &gamepad->g_pJoystick, nullptr);
+
+    // If it failed, then we can't use this joystick. (Maybe the user unplugged
+    // it while we were in the middle of enumerating it.)
+    if (FAILED(hr))
+        return DIENUM_CONTINUE;
+
+    strncpy_s(gamepad->name, pdidInstance->tszInstanceName, MAX_PATH);
+
+    // Stop enumeration. Note: we're just taking the first joystick we get. You
+    // could store all the enumerated joysticks and let the user pick.
+    return DIENUM_STOP;
+}
+
+BOOL CALLBACK Gamepad::EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi,
+    VOID* pContext)
+{
+    Gamepad* gamepad = reinterpret_cast<Gamepad*>(pContext);
+
+    // For axes that are returned, set the DIPROP_RANGE property for the
+    // enumerated axis in order to scale min/max values.
+    if (pdidoi->dwType & DIDFT_AXIS)
+    {
+        DIPROPRANGE diprg;
+        diprg.diph.dwSize = sizeof(DIPROPRANGE);
+        diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+        diprg.diph.dwHow = DIPH_BYID;
+        diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
+        diprg.lMin = -1000;
+        diprg.lMax = +1000;
+
+        // Set the range for the axis
+        if (FAILED(gamepad->g_pJoystick->SetProperty(DIPROP_RANGE, &diprg.diph)))
+            return DIENUM_STOP;
+
+    }
+
+    return DIENUM_CONTINUE;
+}
+
+VOID Gamepad::ReleaseDirectInput()
+{
+    if (g_pJoystick)
+    {
+        g_pJoystick->Unacquire();
+        g_pJoystick->Release();
+    }
+    g_pJoystick = nullptr;
+}
+
+HRESULT Gamepad::UpdateInputState()
+{
+    HRESULT hr;
+
+    if (!g_pJoystick)
+        return S_OK;
+
+    // Poll the device to read the current state
+    hr = g_pJoystick->Poll();
+    if (FAILED(hr))
+    {
+        // DInput is telling us that the input stream has been
+        // interrupted. We aren't tracking any state between polls, so
+        // we don't have any special reset that needs to be done. We
+        // just re-acquire and try again.
+        hr = g_pJoystick->Acquire();
+        while (hr == DIERR_INPUTLOST)
+            hr = g_pJoystick->Acquire();
+
+        // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
+        // may occur when the app is minimized or in the process of 
+        // switching, so just try again later 
+        // return if a fatal error is encountered
+        if ((hr == DIERR_INVALIDPARAM) || (hr == DIERR_NOTINITIALIZED))
+            return E_FAIL;
+
+        // if another application has control of this device, we have to wait for our turn
+        if (hr == DIERR_OTHERAPPHASPRIO)
+            return S_OK;
+    }
+
+    // Get the input's device state
+    if (FAILED(hr = g_pJoystick->GetDeviceState(sizeof(DIJOYSTATE), &js)))
+        return hr; // The device should have been acquired during the Poll()
+
+    LONG input[] = { js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz,
+        js.rglSlider[1], js.rglSlider[0] };
+    int AxisSettings[] = { Settings::gamepadRollAxis, Settings::gamepadPitchAxis,
+        Settings::gamepadYawAxis, Settings::gamepadThrottleAxis };
+    bool InvSettings[] = { Settings::gamepadInvRoll, Settings::gamepadInvPitch,
+        Settings::gamepadInvYaw, Settings::gamepadInvThrottle };
+    int DeadbandSettings[] = { Settings::gamepadRollDeadband, Settings::gamepadPitchDeadband,
+        Settings::gamepadYawDeadband, 0 };
+    int CenterSettings[] = { Settings::gamepadRollCenter, Settings::gamepadPitchCenter,
+        Settings::gamepadYawCenter, Settings::gamepadThrottleCenter };
+    float SensitivitySettings[] = { Settings::gamepadRollSensitivity, Settings::gamepadPitchSensitivity,
+        Settings::gamepadYawSensitivity, Settings::gamepadThrottleSensitivity };
+    float sticks[4];
+
+    for (int i = 0; i < 4; i++)
+    {
+        LONG tmp = input[AxisSettings[i] - 1];
+        raw_stick[i] = tmp / 1000.0f;
+
+        if (tmp < (CenterSettings[i] - DeadbandSettings[i]))
+        {
+            sticks[i] = float(tmp - CenterSettings[i] + DeadbandSettings[i]) / (1000 + CenterSettings[i] - DeadbandSettings[i]);
+        }
+        else if (tmp > (CenterSettings[i] + DeadbandSettings[i]))
+        {
+            sticks[i] = float(tmp - CenterSettings[i] - DeadbandSettings[i]) / (1000 - CenterSettings[i] - DeadbandSettings[i]);
+        }
+        else
+            sticks[i] = 0.0f;
+
+        sticks[i] = InvSettings[i] ? -sticks[i] * SensitivitySettings[i] : sticks[i] * SensitivitySettings[i];
+
+        if (sticks[i] < -1.0f)
+            sticks[i] = -1.0f;
+        else if(sticks[i] > 1.0f)
+            sticks[i] = 1.0f;
+    }
+
+    stick_right_x = sticks[0];
+    stick_right_y = sticks[1];
+    stick_left_x = sticks[2];
+    stick_left_y = sticks[3];
+
+    int ButtonSettings[] = { Settings::gamepadUnstuckButton, Settings::gamepadFlipButton,
+        Settings::gamepadCamButton };
+    bool button[3] = { false };
+    static bool prev_button[3] = { false };
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (ButtonSettings[i] == 0)
+            raw_button[i] = false;
+        else if (ButtonSettings[i] <= 8)
+            raw_button[i] = input[ButtonSettings[i] - 1] > 0;
+        else
+            raw_button[i] = js.rgbButtons[ButtonSettings[i] - 9];
+
+        if (prev_button[i] && raw_button[i])
+            button[i] = false;
+        else
+            prev_button[i] = button[i] = raw_button[i];
+    }
+
+    button_unstuck = button[0];
+    button_flip = button[1];
+    button_cam = button[2];
+
+    return S_OK;
+}

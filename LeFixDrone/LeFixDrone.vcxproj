@@ -52,7 +52,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ScriptHookRDR2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ScriptHookRDR2.lib;OpenAL32.lib;dinput8.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(TargetDir)$(ProjectName).asi" "D:\games\Red Dead Redemption 2\" /Y</Command>
@@ -75,6 +75,7 @@
     <ClInclude Include="Graphics\ColorRGBA.h" />
     <ClInclude Include="Drone\Drone.h" />
     <ClInclude Include="Cams\IndieCam.h" />
+    <ClInclude Include="Graphics\GamepadAxis.h" />
     <ClInclude Include="Input\Gamepad.h" />
     <ClInclude Include="LeFixDrone.h" />
     <ClInclude Include="Graphics\Plot.h" />
@@ -102,6 +103,7 @@
     <ClCompile Include="Graphics\ColorRGBA.cpp" />
     <ClCompile Include="Drone\Drone.cpp" />
     <ClCompile Include="Cams\IndieCam.cpp" />
+    <ClCompile Include="Graphics\GamepadAxis.cpp" />
     <ClCompile Include="Input\Gamepad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\Plot.cpp" />

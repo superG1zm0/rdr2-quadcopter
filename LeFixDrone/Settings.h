@@ -14,10 +14,16 @@ public:
 	static float audioVolume;
 
 	//VISUAL
-	static bool showCollider, showModel, showTrails, showStickCam;
+	static bool showCollider, showModel, showTrails, showStickCam, hideHUD;
 
 	//GAMEPAD
-	static bool gamepadVib, gamepadInvPitch;
+	static bool gamepadVib, gamepadDirectInput;
+	static int gamepadRollAxis, gamepadPitchAxis, gamepadYawAxis, gamepadThrottleAxis;
+	static bool gamepadInvRoll, gamepadInvPitch, gamepadInvYaw, gamepadInvThrottle;
+	static int gamepadRollDeadband, gamepadPitchDeadband, gamepadYawDeadband;
+	static int gamepadRollCenter, gamepadPitchCenter, gamepadYawCenter, gamepadThrottleCenter;
+	static float gamepadRollSensitivity, gamepadPitchSensitivity, gamepadYawSensitivity, gamepadThrottleSensitivity;
+	static int gamepadUnstuckButton, gamepadFlipButton, gamepadCamButton;
 
 	//CAMERA
 	static int camMode;

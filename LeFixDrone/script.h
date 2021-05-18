@@ -23,4 +23,4 @@ void endFlightQuick();
 
 void disableFlightButtons();
 
-void WAIT_LONG(DWORD waitTime);
+void WAIT_LONG(ULONGLONG waitTime);

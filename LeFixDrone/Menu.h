@@ -36,6 +36,7 @@ private:
 	int currentMenuMinOptions;
 	bool leftPress;
 	bool rightPress;
+	int longPress;
 	ULONGLONG delay;
 	const char* strDetails;
 	

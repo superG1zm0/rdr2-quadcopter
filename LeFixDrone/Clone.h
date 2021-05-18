@@ -15,7 +15,6 @@ public:
 	void refreshSettingsDynamic();
 	void refreshCamMode();
 	void setPedFreeze(bool freeze);
-	void playAnimations();
 
 	Vector3f getPosition();
 	Quaternionf getQuaternion();
