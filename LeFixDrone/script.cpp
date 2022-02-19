@@ -381,7 +381,7 @@ void updateMenu()
 		v = false;
 
 		//Options
-		menu.addBoolOption("Hide HUD", &Settings::hideHUD, "Hide HUD and mini map.");
+		menu.addBoolOption("Hide HUD", &Settings::hideHUD, "Hides HUD and mini map.");
 		menu.addBoolOption("Sticks", &Settings::showStickCam, "Prints the stick position on the bottom of the screen.\nIntended for screen capture.");
 		//v = v || menu.addBoolOption("Trails", &Settings::showTrails, "Adds some particle effects at the prop positions.");
 		v = v || menu.addBoolOption("Collision Box Visible", &Settings::showCollider, "Visibility of the collision box model, which is does all\nthe physics.");

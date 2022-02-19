@@ -19,10 +19,10 @@ bool Settings::hideHUD = false;
 bool Settings::gamepadVib = true;
 bool Settings::gamepadDirectInput = false;
 
-int Settings::gamepadRollAxis = 2;
-int Settings::gamepadPitchAxis = 3;
+int Settings::gamepadRollAxis = 1;
+int Settings::gamepadPitchAxis = 2;
 int Settings::gamepadYawAxis = 4;
-int Settings::gamepadThrottleAxis = 1;
+int Settings::gamepadThrottleAxis = 3;
 
 bool Settings::gamepadInvRoll = false;
 bool Settings::gamepadInvPitch = false;
@@ -220,10 +220,10 @@ void Settings::Load() {
 	gamepadVib = settings.GetBoolValue("GAMEPAD", "vibration", true);
 	gamepadDirectInput = settings.GetBoolValue("GAMEPAD", "DirectInput", false);
 
-	gamepadRollAxis = settings.GetLongValue("GAMEPAD", "RollAxis", 2);
-	gamepadPitchAxis = settings.GetLongValue("GAMEPAD", "PitchAxis", 3);
+	gamepadRollAxis = settings.GetLongValue("GAMEPAD", "RollAxis", 1);
+	gamepadPitchAxis = settings.GetLongValue("GAMEPAD", "PitchAxis", 2);
 	gamepadYawAxis = settings.GetLongValue("GAMEPAD", "YawAxis", 4);
-	gamepadThrottleAxis = settings.GetLongValue("GAMEPAD", "ThrottleAxis", 1);
+	gamepadThrottleAxis = settings.GetLongValue("GAMEPAD", "ThrottleAxis", 3);
 
 	gamepadInvRoll = settings.GetBoolValue("GAMEPAD", "invertedRoll", false);
 	gamepadInvPitch = settings.GetBoolValue("GAMEPAD", "invertedPitch", false);
